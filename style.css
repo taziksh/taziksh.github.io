@@ -62,12 +62,12 @@ ul {
   padding: 0em 1em;
 }
 
-.flex {
+.nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 10%;
-  gap: 10%;
+  gap: 25%;
 }
 a {
     text-decoration: none;
@@ -77,4 +77,5 @@ a {
     display: flex;
     flex-direction: column;
     padding: 20px; 
+    align-items: center;
 }
