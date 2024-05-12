@@ -15,7 +15,7 @@ to this section's matching END comment to see page-specific styles.
 */
 
 /* Our default values set as CSS variables */
-:root {
+/* :root {
   --color-bg: #69F7BE;
   --color-text-main: #000000;
   --color-primary: #FFFF00;
@@ -24,7 +24,7 @@ to this section's matching END comment to see page-specific styles.
   --image-margin: 3rem;
   --font-family: "HK Grotesk";
   --font-family-header: "HK Grotesk";
-}
+} */
 
 /* Basic page style resets */
 * {
@@ -78,4 +78,5 @@ a {
     flex-direction: column;
     padding: 20px; 
     align-items: center;
+    height: 100vh;
 }
