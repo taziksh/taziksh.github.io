@@ -59,14 +59,15 @@ a, h3 {
 }
 
 ul {
-  padding: 1em;
+  padding: 0em 1em;
 }
 
 .flex {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  width: 30%;
+  width: 10%;
+  gap: 10%;
 }
 a {
     text-decoration: none;
