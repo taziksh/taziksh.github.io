@@ -1,34 +1,48 @@
-# Portfolio Starter Kit
+# Hello website!
 
-This portfolio is built with **Next.js** and a library called [Nextra](https://nextra.vercel.app/). It allows you to write Markdown and focus on the _content_ of your portfolio. This starter includes:
+This is a basic HTML starter project you can build on however you like. No need to save. While you develop your site, your changes will happen ✨ immediately in the preview window. On the left you'll see the files that make up your site, including HTML, JavaScript, and CSS. You can upload assets like images or audio in `assets`. The rest is up to you and your imagination. 🦄
 
-- Automatically configured to handle Markdown/MDX
-- Generates an RSS feed based on your posts
-- A beautiful theme included out of the box
-- Easily categorize posts with tags
-- Fast, optimized web font loading
+_Last updated: 28 Feb 2023_
 
-## Configuration
+## What's in this project?
 
-1. Update your name in `theme.config.js` or change the footer.
-1. Update your name and site URL for the RSS feed in `scripts/gen-rss.js`.
-1. Update the meta tags in `pages/_document.js`.
-1. Update the posts inside `pages/posts/*.md` with your own content.
+← `README.md`: That's this file, where you can tell people what your cool website does and how you built it.
 
-## Deploy your own
+← `index.html`: This is the main web page for your site. The HTML defines the structure and content of the page using _elements_. You'll see references in the HTML to the JS and CSS files. Try clicking the image in the center of the page!
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+← `style.css`: CSS files add styling rules to your content. The CSS applies styles to the elements in your HTML page. The style rules also make the image move when you click it.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/nextjs-portfolio-starter&project-name=portfolio&repository-name=portfolio)
+← `script.js`: If you're feeling fancy you can add interactivity to your site with JavaScript. The code in the JavaScript file runs when the page loads, and when the visitor clicks the button you can add using the code in the TODO.
 
-## How to use
+Open each file and check out the comments (in gray) for more info.
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+## Try this next 🏗️
 
-```bash
-npx create-next-app --example blog my-blog
-# or
-yarn create next-app --example blog my-blog
+Take a look in `TODO.md` for next steps you can try out in your new site!
+
+___Want a minimal version of this project to build your own website? Check out [Blank Website](https://glitch.com/edit/#!/remix/glitch-blank-website)!___
+
+## Ready to share your site?
+
+Add these meta tags for SEO and social sharing between your page `<head></head>` tags, changing the values for your site:
+
+```
+<link rel="canonical" href="https://glitch-hello-website.glitch.me/" />
+<meta name="description" content="A simple website, built with Glitch. Remix it to get your own."/>
+<meta name="robots" content="index,follow" />
+<meta property="og:title" content="Hello World!" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://glitch-hello-website.glitch.me/" />
+<meta property="og:description" content="A simple website, built with Glitch. Remix it to get your own."/>
+<meta property="og:image" content="https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2Fhello-website-social.png?v=1616712748147"/>
+<meta name="twitter:card" content="summary" />
 ```
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+![Glitch](https://cdn.glitch.com/a9975ea6-8949-4bab-addb-8a95021dc2da%2FLogo_Color.svg?v=1602781328576)
+
+## You built this with Glitch!
+
+[Glitch](https://glitch.com) is a friendly community where millions of people come together to build web apps and websites.
+
+- Need more help? [Check out our Help Center](https://help.glitch.com/) for answers to any common questions.
+- Ready to make it official? [Become a paid Glitch member](https://glitch.com/pricing) to boost your app with private sharing, more storage and memory, domains and more.
