@@ -27,10 +27,16 @@ to this section's matching END comment to see page-specific styles.
 } */
 
 /* Basic page style resets */
+html, body {
+  overflow-x: hidden;
+}
+
 * {
   box-sizing: border-box;
   background-color: black;
   font-family: "HK Grotesk";
+  margin: 0;
+  padding: 0;
 }
 [hidden] {
   display: none !important;
@@ -65,9 +71,7 @@ ul {
 .nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 10%;
-  gap: 25%;
+  gap: 20px;
 }
 a {
     text-decoration: none;
@@ -76,7 +80,7 @@ a {
 .container {
     display: flex;
     flex-direction: column;
-    padding: 20px; 
+    padding: 40px;
     align-items: center;
     height: 100vh;
 }
