@@ -20,6 +20,8 @@
       .container {
         position: relative;
         z-index: 1;
+        height: auto;
+        padding: 40px;
       }
       .container, .container * {
         background: transparent !important;
@@ -34,12 +36,24 @@
         z-index: 2;
         background: transparent !important;
       }
+      .content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
       .title {
-        text-align: center;
-        margin-bottom: 0.5em;
+        font-family: monospace;
+        margin: 0;
+        font-size: 1em;
+        font-weight: normal;
       }
       .nav {
-        justify-content: center;
+        justify-content: flex-end;
+      }
+      .nav h3 {
+        font-size: 1em;
+        font-weight: normal;
       }
     </style>
   </head>
@@ -48,13 +62,13 @@
     <div class="location-info" id="location-info">locating...</div>
     <div class="container">
       <div class="content" role="main">
-        <h1 class="title">Tazik</h1>
+        <h1 class="title">$ tazik</h1>
         <div class="nav">
-          <a href="https://taziksh.substack.com/">
-            <h3>words</h3>
-          </a>
           <a href="index.html">
             <h3>home</h3>
+          </a>
+          <a href="https://taziksh.substack.com/">
+            <h3>words</h3>
           </a>
           <!-- <a href="photos.html">
             <h3>pixels</h3>
