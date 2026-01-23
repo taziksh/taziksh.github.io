@@ -10,8 +10,35 @@
     <link rel="stylesheet" href="/style.css" />
 
     <script src="/script.js" defer></script>
+    <style>
+      canvas#starmap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+      .container {
+        position: relative;
+        z-index: 1;
+      }
+      .container, .container * {
+        background: transparent !important;
+      }
+      .location-info {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        font-family: monospace;
+        font-size: 9px;
+        color: white;
+        z-index: 2;
+        background: transparent !important;
+      }
+    </style>
   </head>
   <body>
+    <canvas id="starmap"></canvas>
+    <div class="location-info" id="location-info">locating...</div>
     <div class="container">
       <div class="content" role="main">
         <h1 class="title">Tazik</h1>
@@ -60,5 +87,7 @@
         -->
       </div>
     </div>
+
+    <script src="/starmap.js"></script>
   </body>
 </html>
