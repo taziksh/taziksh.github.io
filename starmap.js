@@ -241,14 +241,24 @@
     }
   }
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      p => { latitude = p.coords.latitude; longitude = p.coords.longitude; updateLocationDisplay(); },
-      () => { updateLocationDisplay(); if (locationInfo) locationInfo.textContent += ' (default)'; }
-    );
-  } else {
-    updateLocationDisplay(); if (locationInfo) locationInfo.textContent += ' (default)';
+  // Try IP-based geolocation first (no popup)
+  async function getLocation() {
+    try {
+      const response = await fetch('http://ip-api.com/json/?fields=lat,lon');
+      const data = await response.json();
+      if (data.lat && data.lon) {
+        latitude = data.lat;
+        longitude = data.lon;
+        updateLocationDisplay();
+        return;
+      }
+    } catch (err) {
+      console.log('IP geolocation failed, using default location');
+    }
+    updateLocationDisplay();
   }
+
+  getLocation();
 
   window.addEventListener('resize', resize);
 
