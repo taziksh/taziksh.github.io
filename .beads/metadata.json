@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "taziksh.github.io",
+  "project_id": "34a413f8-bb9b-4339-81fc-83b788cee3a8"
+}
