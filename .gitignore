@@ -8,3 +8,6 @@ prototypes/
 .dolt/
 *.db
 .beads-credential-key
+
+# work page is WIP — keep local for preview, do not deploy
+public/work.html
