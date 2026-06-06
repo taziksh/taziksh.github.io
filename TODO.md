@@ -1,10 +1,10 @@
 # TODO
 
-- [ ] **Signature at bottom of blog posts.** Use the handwritten signature
-      (`~/Documents/photos/TazikSignature.001.jpeg`). Needs processing so it
-      works in both light and dark mode — black ink on white won't show on the
-      dark theme. Options: transparent PNG + per-theme variants (dark-on-clear
-      for light, light-on-clear for dark), or an SVG using `currentColor`.
-      Mind the blue accent dots if inverting.
-- [ ] Templater auto-frontmatter (currently core Templates + ⌘T).
-- [ ] Optional: self-host favicons instead of DuckDuckGo at build time.
+Tracked in [beads](https://github.com/steveyegge/beads) now — run `bd list` to see open issues.
+
+Current (as of 2026-06-06):
+- `taziksh-yo4` — Write copy for work page (decisions + draft captured in the issue notes)
+- `taziksh-rso` — Redesign work experience page (badges + popovers)
+- `taziksh-1vd` — Add handwritten signature to bottom of blog posts (needs dark/light processing)
+- `taziksh-aqo` — Set up Templater for auto-frontmatter
+- `taziksh-e0l` — Optionally self-host external-link favicons
