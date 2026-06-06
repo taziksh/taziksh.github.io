@@ -1,0 +1,138 @@
+---
+interface Props {
+  title: string;
+  date: Date;
+}
+const { title, date } = Astro.props;
+const dateStr = date.toISOString().slice(0, 10);
+const dateHuman = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title} | Tazik</title>
+  </head>
+  <body>
+    <main class="note">
+      <a class="back" href="/notes" aria-label="notes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5L12 3l9 7.5" />
+          <path d="M5 9.5V21h14V9.5" />
+        </svg>
+      </a>
+      <article>
+        <header>
+          <h1>{title}</h1>
+          <time datetime={dateStr}>{dateHuman}</time>
+        </header>
+        <slot />
+      </article>
+    </main>
+
+    <style is:global>
+      :root {
+        --bg: #ffffff;
+        --ink: #222222;
+        --ink-strong: #181818;
+        --muted: #8a8a8a;
+        --accent: #7b68ee;
+        --code-bg: #f2f2f2;
+        --code-ink: #3a3a3a;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1e1e1e;
+          --ink: #dadada;
+          --ink-strong: #eaeaea;
+          --muted: #888888;
+          --accent: #a18bf0;
+          --code-bg: #2a2a2a;
+          --code-ink: #cfcfcf;
+        }
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+      }
+
+      .astro-code { background-color: var(--shiki-light-bg); }
+      .astro-code,
+      .astro-code span { color: var(--shiki-light); }
+      @media (prefers-color-scheme: dark) {
+        .astro-code { background-color: var(--shiki-dark-bg); }
+        .astro-code,
+        .astro-code span { color: var(--shiki-dark); }
+      }
+    </style>
+
+    <style>
+      .note {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 6rem;
+      }
+      .back {
+        display: inline-flex;
+        color: var(--muted);
+      }
+      .back svg { width: 18px; height: 18px; }
+      .back:hover { color: var(--accent); }
+      header { margin: 2.5rem 0 2rem; }
+      h1 {
+        font-family: 'Fraunces', serif;
+        font-optical-sizing: auto;
+        font-weight: 500;
+        font-size: 1.95rem;
+        line-height: 1.15;
+        margin: 0 0 0.4rem;
+        color: var(--ink-strong);
+      }
+      time {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      article :global(a) { color: var(--accent); }
+      article :global(.link-favicon) {
+        width: 0.95em;
+        height: 0.95em;
+        margin-left: 0.2em;
+        vertical-align: -0.1em;
+        border-radius: 2px;
+      }
+      article :global(.favicon-span) { white-space: nowrap; }
+      article :global(pre) {
+        background: var(--code-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+      article :global(:not(pre) > code) {
+        background: var(--code-bg);
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      article :global(img) { max-width: 100%; border-radius: 8px; }
+    </style>
+  </body>
+</html>
