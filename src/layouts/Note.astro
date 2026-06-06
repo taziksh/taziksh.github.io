@@ -85,7 +85,7 @@ const dateHuman = date.toLocaleDateString('en-US', {
 
     <style>
       .note {
-        max-width: 640px;
+        max-width: 680px;
         margin: 0 auto;
         padding: 3rem 1.5rem 6rem;
       }
@@ -107,6 +107,36 @@ const dateHuman = date.toLocaleDateString('en-US', {
       }
       time {
         font-size: 0.9rem;
+        color: var(--muted);
+      }
+      article {
+        font-size: 1.18rem;
+        line-height: 1.75;
+      }
+      article :global(p) { margin: 0 0 1.35em; }
+      article :global(ul),
+      article :global(ol) { margin: 0 0 1.35em; padding-left: 1.4em; }
+      article :global(li) { margin: 0.35em 0; }
+      article :global(li > p) { margin: 0; }
+      article :global(h2) {
+        font-family: 'Fraunces', serif;
+        font-optical-sizing: auto;
+        font-weight: 500;
+        font-size: 1.45rem;
+        line-height: 1.25;
+        margin: 1.8em 0 0.5em;
+        color: var(--ink-strong);
+      }
+      article :global(h3) {
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin: 1.6em 0 0.4em;
+        color: var(--ink-strong);
+      }
+      article :global(blockquote) {
+        margin: 0 0 1.35em;
+        padding-left: 1em;
+        border-left: 3px solid var(--code-bg);
         color: var(--muted);
       }
       article :global(a) { color: var(--accent); }
@@ -133,6 +163,12 @@ const dateHuman = date.toLocaleDateString('en-US', {
         font-size: 0.9em;
       }
       article :global(img) { max-width: 100%; border-radius: 8px; }
+
+      @media (max-width: 480px) {
+        .note { padding: 2.5rem 1.25rem 5rem; }
+        h1 { font-size: 1.6rem; }
+        article { font-size: 1.1rem; }
+      }
     </style>
   </body>
 </html>
