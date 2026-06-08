@@ -1,0 +1,211 @@
+---
+const VIEW_W = 560;
+const VIEW_H = 300;
+const PAD = { left: 44, right: 20, top: 28, bottom: 30 };
+const N_MAX = 100;
+const SAMPLES = 120;
+const DEFAULT_P = 0.05;
+const DEFAULT_N = 60;
+
+const plotW = VIEW_W - PAD.left - PAD.right;
+const plotH = VIEW_H - PAD.top - PAD.bottom;
+const baseY = VIEW_H - PAD.bottom;
+const sx = (n: number) => PAD.left + (n / N_MAX) * plotW;
+const sy = (prob: number) => PAD.top + (1 - prob) * plotH;
+const prob = (p: number, n: number) => 1 - Math.pow(1 - p, n);
+
+function curve(p: number) {
+  let d = '';
+  for (let i = 0; i <= SAMPLES; i++) {
+    const n = (i / SAMPLES) * N_MAX;
+    d += `${i ? 'L' : 'M'}${sx(n).toFixed(1)} ${sy(prob(p, n)).toFixed(1)}`;
+  }
+  return d;
+}
+
+const cfg = { viewW: VIEW_W, viewH: VIEW_H, nMax: N_MAX, samples: SAMPLES, ...PAD };
+const dx = sx(DEFAULT_N);
+const dy = sy(prob(DEFAULT_P, DEFAULT_N));
+---
+
+<figure class="offer-chart" data-offer-chart data-cfg={JSON.stringify(cfg)}>
+  <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} role="img" aria-label="Probability of at least one offer">
+    <line class="axis" x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={baseY} />
+    <line class="axis" x1={PAD.left} y1={baseY} x2={VIEW_W - PAD.right} y2={baseY} />
+    <text class="tick" x={PAD.left - 6} y={PAD.top + 4} text-anchor="end">1</text>
+    <text class="tick" x={PAD.left - 6} y={baseY} text-anchor="end">0</text>
+    <text class="tick" x={PAD.left} y={baseY + 16} text-anchor="middle">0</text>
+    <text class="tick" x={VIEW_W - PAD.right} y={baseY + 16} text-anchor="end">{N_MAX}</text>
+    <text class="hero" x={PAD.left + 12} y={PAD.top + 50}>{Math.round(prob(DEFAULT_P, DEFAULT_N) * 100)}%</text>
+    <path class="curve" d={curve(DEFAULT_P)} />
+    <line class="guide" x1={dx} y1={dy} x2={dx} y2={baseY} />
+    <circle class="dot" cx={dx} cy={dy} r="5" />
+  </svg>
+
+  <div class="levers">
+    <label class="lever">
+      <span class="lever-name">applications (n = <span class="nv">{DEFAULT_N}</span>)</span>
+      <input class="n-slider" type="range" min="0" max={N_MAX} value={DEFAULT_N} step="1" />
+    </label>
+    <label class="lever">
+      <span class="lever-name">success rate (p = <span class="pv">{Math.round(DEFAULT_P * 100)}%</span>)</span>
+      <input class="p-slider" type="range" min="1" max="40" value={DEFAULT_P * 100} step="1" />
+    </label>
+  </div>
+</figure>
+
+<style>
+  .offer-chart {
+    margin: 2.5em 0;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .axis {
+    stroke: var(--muted);
+    stroke-width: 1;
+    opacity: 0.4;
+  }
+  .tick {
+    fill: var(--muted);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 11px;
+  }
+  .curve {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .guide {
+    stroke: var(--muted);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    opacity: 0.5;
+  }
+  .dot {
+    fill: var(--accent);
+  }
+  .hero {
+    fill: var(--ink-strong);
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 40px;
+  }
+  .levers {
+    margin-top: 1rem;
+    padding-left: 7.857%;
+    padding-right: 3.571%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .lever {
+    display: block;
+  }
+  .lever-name {
+    display: block;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 0.45rem;
+  }
+  .lever input {
+    display: block;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 18px;
+    background: transparent;
+    cursor: pointer;
+    margin: 0;
+  }
+  .lever input::-webkit-slider-runnable-track {
+    height: 2px;
+    background: var(--muted);
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+  .lever input::-moz-range-track {
+    height: 2px;
+    background: var(--muted);
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+  .lever input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    margin-top: -6.5px;
+  }
+  .lever input::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border: none;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  type Cfg = {
+    viewW: number; viewH: number; nMax: number; samples: number;
+    left: number; right: number; top: number; bottom: number;
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-offer-chart]').forEach((root) => {
+    const c: Cfg = JSON.parse(root.dataset.cfg!);
+    const plotW = c.viewW - c.left - c.right;
+    const plotH = c.viewH - c.top - c.bottom;
+    const baseY = c.viewH - c.bottom;
+    const sx = (n: number) => c.left + (n / c.nMax) * plotW;
+    const sy = (prob: number) => c.top + (1 - prob) * plotH;
+    const prob = (p: number, n: number) => 1 - Math.pow(1 - p, n);
+
+    const curvePath = root.querySelector<SVGPathElement>('.curve')!;
+    const guide = root.querySelector<SVGLineElement>('.guide')!;
+    const dot = root.querySelector<SVGCircleElement>('.dot')!;
+    const hero = root.querySelector<SVGTextElement>('.hero')!;
+    const nSlider = root.querySelector<HTMLInputElement>('.n-slider')!;
+    const pSlider = root.querySelector<HTMLInputElement>('.p-slider')!;
+    const nv = root.querySelector<HTMLElement>('.nv')!;
+    const pv = root.querySelector<HTMLElement>('.pv')!;
+
+    function curve(pp: number) {
+      let d = '';
+      for (let i = 0; i <= c.samples; i++) {
+        const nn = (i / c.samples) * c.nMax;
+        d += `${i ? 'L' : 'M'}${sx(nn).toFixed(1)} ${sy(prob(pp, nn)).toFixed(1)}`;
+      }
+      return d;
+    }
+
+    function render() {
+      const p = +pSlider.value / 100;
+      const n = +nSlider.value;
+      const x = sx(n);
+      const y = sy(prob(p, n));
+      curvePath.setAttribute('d', curve(p));
+      dot.setAttribute('cx', `${x}`);
+      dot.setAttribute('cy', `${y}`);
+      guide.setAttribute('x1', `${x}`);
+      guide.setAttribute('x2', `${x}`);
+      guide.setAttribute('y1', `${y}`);
+      hero.textContent = `${Math.round(prob(p, n) * 100)}%`;
+      nv.textContent = `${n}`;
+      pv.textContent = `${Math.round(p * 100)}%`;
+    }
+
+    nSlider.addEventListener('input', render);
+    pSlider.addEventListener('input', render);
+    render();
+  });
+</script>
