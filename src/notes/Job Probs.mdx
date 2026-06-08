@@ -1,0 +1,42 @@
+---
+title: Job Probabilities
+date: 2026-06-07
+public: true
+---
+import OfferChart from '../components/OfferChart.astro';
+
+How do you get a job?
+
+You don't need to land an offer for every single job you apply to. *You need to get just one*. The moment you have your first success, you can stop interviewing.
+
+
+$$
+P(\text{zero offers}) = (1-p)^n
+$$
+
+What is the probability you get *at least one* offer after $n$ applications?
+
+$$
+P(\text{at least one offer}) = 1-(1-p)^n
+$$
+
+So, there are two ways you can increase your chances:
+
+- Make $p$ go up: become a more qualified candidate, apply for roles that match your experience etc
+- Make $n$ go up: apply and interview at more places
+
+
+You can play with the parameters yourself:
+
+<OfferChart />
+
+What does this tell us?
+
+$p$ is more tune-able, and should be the bulk of your effort. You can become much more qualified by learning fundamentals, doing practice interviews, and aligning your profile with the ideal candidate's.
+
+But $n$ is also a variable! And pretty simple to keep investing in. So don't give up. Keep applying.
+
+
+Caveating that we made some simplifying assumptions:
+- That each application is independent, and doesn't affect future outcomes
+- That each job is equally attainable
