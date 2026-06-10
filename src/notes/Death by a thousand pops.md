@@ -68,7 +68,7 @@ def merge(l, r):
 
 This passed all 12 testcases!
 
-I still think the cheatsheet is a great resource. So I made a pull request to fix the slow merge sort implementation in Python/JavaScript/C++. The Java/Lua/Ruby merge sorts were already correct.
+I still think the cheatsheet is a great resource. So I made a [pull request](https://github.com/jwl-7/leetcode-cheatsheet/pull/4) to fix the slow merge sort implementations in Python, JavaScript and C++.
 
 What are my takeaways?
 1. Remember what your built-in operations cost. `pop(0)` seems innocuous but upon a bit of reflection isn't!
