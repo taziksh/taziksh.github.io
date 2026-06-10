@@ -1,0 +1,46 @@
+#!/bin/sh
+# Block committing notes that aren't explicitly public: true, and any asset
+# under public/notes/ not referenced by a public note.
+# The repo is public, so anything committed here is world-readable
+# regardless of the `public` frontmatter flag the site uses for rendering.
+
+blocked=""
+
+is_public() {
+  git show ":$1" 2>/dev/null | sed -n '/^---$/,/^---$/p' | grep -q '^public: true$'
+}
+
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  if ! is_public "$f"; then
+    blocked="$blocked\n  $f (note is not public: true)"
+  fi
+done <<EOF
+$(git diff --cached --name-only --diff-filter=ACMR -- 'src/notes/*.md' 'src/notes/*.mdx')
+EOF
+
+public_notes=$(mktemp)
+trap 'rm -f "$public_notes"' EXIT
+while IFS= read -r n; do
+  [ -z "$n" ] && continue
+  if is_public "$n"; then
+    git show ":$n" >> "$public_notes"
+  fi
+done <<EOF
+$(git ls-files --cached -- 'src/notes/*.md' 'src/notes/*.mdx')
+EOF
+
+while IFS= read -r img; do
+  [ -z "$img" ] && continue
+  if ! grep -qF "/notes/$(basename "$img")" "$public_notes"; then
+    blocked="$blocked\n  $img (not referenced by any public note)"
+  fi
+done <<EOF
+$(git diff --cached --name-only --diff-filter=ACMR -- 'public/notes/*')
+EOF
+
+if [ -n "$blocked" ]; then
+  printf 'pre-commit: refusing to commit non-public note content (repo is public):%b\n' "$blocked"
+  printf 'Notes need "public: true" frontmatter; assets must be referenced by a public note.\n'
+  exit 1
+fi
