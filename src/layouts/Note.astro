@@ -165,6 +165,24 @@ const dateHuman = date.toLocaleDateString('en-US', {
         font-size: 0.9em;
       }
       article :global(img) { max-width: 100%; border-radius: 8px; }
+      article :global(table) {
+        border-collapse: collapse;
+        margin: 0 0 1.35em;
+        font-size: 0.95em;
+      }
+      article :global(th),
+      article :global(td) {
+        padding: 0.35em 1.2em 0.35em 0;
+        text-align: left;
+      }
+      article :global(th[align='right']),
+      article :global(td[align='right']) { text-align: right; }
+      article :global(th[align='center']),
+      article :global(td[align='center']) { text-align: center; }
+      article :global(th) {
+        color: var(--ink-strong);
+        border-bottom: 1px solid var(--code-bg);
+      }
 
       @media (max-width: 480px) {
         .note { padding: 2.5rem 1.25rem 5rem; }
