@@ -1,6 +1,6 @@
 ---
 title: "Greedy algorithms: do all the activities!"
-date: 2026-06-10
+date: 2026-06-09
 public: true
 ---
 Today, we're going to look at a classic problem:
