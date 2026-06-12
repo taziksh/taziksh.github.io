@@ -148,12 +148,44 @@ const dateHuman = date.toLocaleDateString('en-US', {
         border-left: 3px solid var(--code-bg);
         color: var(--muted);
       }
+      article :global(hr) {
+        border: 0;
+        margin: 2.4rem 0;
+        text-align: center;
+        color: var(--muted);
+      }
+      article :global(hr::before) {
+        content: '⁂';
+        font-family: 'Fraunces', serif;
+        font-size: 1.15rem;
+        line-height: 1;
+      }
       article :global(a) { color: var(--accent); }
+      article :global(.image-caption) {
+        display: block;
+        width: fit-content;
+        max-width: 100%;
+        margin: -0.85em auto 1.6em;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.72em;
+        line-height: 1.35;
+      }
+      article :global(.image-caption a) {
+        color: inherit;
+        text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+      }
+      article :global(.image-caption a:hover) {
+        color: var(--accent);
+      }
       article :global(.link-favicon) {
+        display: inline-block;
         width: 0.95em;
         height: 0.95em;
+        max-width: none;
         margin-left: 0.2em;
         vertical-align: -0.1em;
+        object-fit: contain;
         border-radius: 2px;
       }
       article :global(.favicon-span) { white-space: nowrap; }
@@ -171,7 +203,29 @@ const dateHuman = date.toLocaleDateString('en-US', {
         border-radius: 4px;
         font-size: 0.9em;
       }
-      article :global(img) { max-width: 100%; border-radius: 8px; }
+      article :global(img) {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin-inline: auto;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+      article :global(img[alt*='Cepheid']) {
+        width: min(500px, 100%);
+        height: min(333px, calc((100vw - 3rem) * 333 / 500));
+        aspect-ratio: 479 / 319;
+      }
+      article :global(img[alt*='Leavitt']) {
+        width: min(660px, 100%);
+        height: min(439px, calc((100vw - 3rem) * 439 / 660));
+        aspect-ratio: 479 / 319;
+      }
+      article :global(img[alt*='Light spreading']) {
+        width: min(440px, 100%);
+        height: min(293px, calc((100vw - 3rem) * 293 / 440));
+        aspect-ratio: 479 / 319;
+      }
       .signoff {
         display: flex;
         justify-content: center;
