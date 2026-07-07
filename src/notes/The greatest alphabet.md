@@ -11,7 +11,7 @@ My friend A is a huge linguistics nerd. He explained how Hangul works to me in 5
 
 I was shocked by its simplicity. And the fact that this modern, easy-to-learn alphabet is the official writing system of South (and North) Korea was an awesome reminder that we *can* have nice things.
 
-Hangul was originally created by the Joseon era king Sejong the Great in 1443 to improve the populace's literacy rate. It was designed to be simple! Unfortunately, it was looked down on by the elite, and only became the primary writing system in the Koreas *500* years later, after World War II.
+Hangul was created under the Joseon-era king Sejong the Great in 1443 and formally promulgated in 1446 to make written Korean more accessible to ordinary people. Unfortunately, it was looked down on by much of the elite for centuries, and only became the dominant Korean writing system in the modern era.
 
 What makes Hangul so intuitive? That's what this post is about!
 
