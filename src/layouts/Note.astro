@@ -44,9 +44,6 @@ const dateHuman = date.toLocaleDateString('en-US', {
         </header>
         <slot />
       </article>
-      <div class="signoff">
-        <img class="signature" src="/assets/signature.png" alt="Tazik" />
-      </div>
     </main>
 
     <style is:global>
@@ -244,21 +241,6 @@ const dateHuman = date.toLocaleDateString('en-US', {
         width: min(440px, 100%);
         height: min(293px, calc((100vw - 3rem) * 293 / 440));
         aspect-ratio: 479 / 319;
-      }
-      .signoff {
-        display: flex;
-        justify-content: center;
-        margin-top: auto;
-        padding-top: 6rem;
-      }
-      .signature {
-        height: 1.5rem;
-        width: auto;
-        display: block;
-        opacity: 0.85;
-      }
-      @media (prefers-color-scheme: dark) {
-        .signature { filter: invert(1) hue-rotate(180deg); }
       }
       article :global(table) {
         border-collapse: collapse;
