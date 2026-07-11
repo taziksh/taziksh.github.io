@@ -105,4 +105,4 @@ But let's think about what this means. If every layer $k+1$ can have *no more* i
 
 To answer this, I turn to [*Understanding intermediate layers using linear classifier probes*](https://arxiv.org/abs/1610.01644), Alain & Bengio (2016).
 
-> "One of the important lessons is that neural networks are really about distilling computationally-useful representations, and they are not about information contents as described by the field of Information Theory."
+> One of the important lessons is that neural networks are really about distilling computationally-useful representations, and they are not about information contents as described by the field of Information Theory.

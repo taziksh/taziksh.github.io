@@ -143,10 +143,28 @@ const dateHuman = date.toLocaleDateString('en-US', {
         color: var(--ink-strong);
       }
       article :global(blockquote) {
-        margin: 0 0 1.35em;
-        padding-left: 1em;
-        border-left: 3px solid var(--code-bg);
-        color: var(--muted);
+        position: relative;
+        margin: 2rem 0;
+        padding: 0;
+        font-family: 'Fraunces', serif;
+        font-size: 1.05em;
+        line-height: 1.65;
+        color: var(--ink-strong);
+      }
+      article :global(blockquote::before) {
+        content: '\201C';
+        position: absolute;
+        left: -3rem;
+        top: -0.4rem;
+        font-family: 'Fraunces', serif;
+        font-size: 3rem;
+        line-height: 1;
+        color: var(--accent);
+      }
+      article :global(blockquote p:last-child) { margin-bottom: 0; }
+      @media (max-width: 800px) {
+        article :global(blockquote) { padding-left: 2.4rem; }
+        article :global(blockquote::before) { left: 0; }
       }
       article :global(hr) {
         border: 0;
