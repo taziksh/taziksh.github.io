@@ -103,6 +103,6 @@ And that's how you get the [Data Processing Inequality](https://en.wikipedia.org
 
 But let's think about what this means. If every layer $k+1$ can have *no more* information than layer $k$, how come the later layers of a neural network work the best (e.g. in a classifier)?
 
-To answer this, I turn to [*Understanding intermediate layers using linear classifier probes*](https://arxiv.org/abs/1610.01644), Alain & Bengio (2016).
+To answer this, I turn to [*Understanding intermediate layers using linear classifier probes*](https://arxiv.org/abs/1610.01644):
 
 > One of the important lessons is that neural networks are really about distilling computationally-useful representations, and they are not about information contents as described by the field of Information Theory.
