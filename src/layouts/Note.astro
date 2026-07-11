@@ -172,13 +172,7 @@ const dateHuman = date.toLocaleDateString('en-US', {
       }
       article :global(.katex) { font-size: 1.05em; }
       article :global(a) { color: var(--accent); }
-      article :global(a.quiet-link) {
-        color: inherit;
-        text-decoration: underline;
-        text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
-        text-underline-offset: 0.15em;
-      }
-      article :global(a.quiet-link:hover) { color: var(--accent); }
+      article :global(a[data-footnote-ref]) { text-decoration: none; }
       article :global(.image-caption) {
         display: block;
         width: fit-content;
