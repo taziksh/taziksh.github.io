@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 | Tazik</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --ink: #222222;
+        --ink-strong: #181818;
+        --muted: #8a8a8a;
+        --accent: #7b68ee;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1e1e1e;
+          --ink: #dadada;
+          --ink-strong: #eaeaea;
+          --muted: #888888;
+          --accent: #a18bf0;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      main {
+        text-align: center;
+        padding: 2rem;
+      }
+      h1 {
+        font-family: 'Silkscreen', monospace;
+        font-weight: 400;
+        font-size: 2.5rem;
+        margin: 0 0 1rem;
+        color: var(--ink-strong);
+      }
+      img {
+        width: 168px;
+        image-rendering: pixelated;
+        display: block;
+        margin: 0 auto 1rem;
+      }
+      .run {
+        display: inline-block;
+        margin-top: 2rem;
+        font-family: 'Silkscreen', monospace;
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 0.05em;
+      }
+      .run:hover { color: var(--accent); }
+      .run::before { content: '▸'; margin-right: 0.5em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>404</h1>
+      <img
+        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ii/crystal/animated/143.gif"
+        alt="a sleeping snorlax"
+      />
+      <a class="run" href="/">RUN</a>
+    </main>
+  </body>
+</html>
