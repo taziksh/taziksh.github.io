@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&display=swap"
+      rel="stylesheet"
+    />
+    <title>Places | Tazik</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --ink: #222222;
+        --ink-strong: #181818;
+        --muted: #8a8a8a;
+        --accent: #7b68ee;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1e1e1e;
+          --ink: #dadada;
+          --ink-strong: #eaeaea;
+          --muted: #888888;
+          --accent: #a18bf0;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        line-height: 1.7;
+      }
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 6rem;
+      }
+      .home {
+        font-size: 1rem;
+        color: var(--muted);
+        text-decoration: none;
+        display: inline-block;
+        padding: 0.6rem 0.8rem;
+        margin: -0.6rem -0.8rem;
+      }
+      .home:hover { color: var(--accent); }
+      h1 {
+        font-family: 'Fraunces', serif;
+        font-optical-sizing: auto;
+        font-weight: 500;
+        font-size: 1.6rem;
+        margin: 2.5rem 0 0.75rem;
+        color: var(--ink-strong);
+      }
+      .flags {
+        font-size: 1.7rem;
+        line-height: 1.5;
+        letter-spacing: 0.3rem;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="home" href="/" aria-label="home">~/</a>
+
+      <h1>where I've lived</h1>
+      <p class="flags">🇧🇩 🇨🇦 🇺🇸 🇬🇧</p>
+
+      <h1>where I've been</h1>
+      <p class="flags">🇯🇵 🇰🇷 🇮🇳 🇸🇦 🇪🇸 🇵🇹</p>
+    </main>
+  </body>
+</html>
