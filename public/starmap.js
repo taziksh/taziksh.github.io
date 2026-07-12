@@ -4,9 +4,11 @@
 
   const ctx = canvas.getContext('2d');
 
-  // Data sources
-  const HYG_URL = 'https://gist.githubusercontent.com/djdmsr/c74249982d966e4038dfe0e5bc35ea83/raw/hyglight.json';
-  const CONSTELLATIONS_URL = 'https://raw.githubusercontent.com/ofrohn/d3-celestial/master/data/constellations.lines.json';
+  // Data sources — vendored locally in public/star-data/ (pages served from a
+  // non-root prefix can set window.STAR_DATA_BASE before loading this script)
+  const DATA_BASE = window.STAR_DATA_BASE ?? '/star-data';
+  const HYG_URL = `${DATA_BASE}/hyglight.json`;
+  const CONSTELLATIONS_URL = `${DATA_BASE}/constellations.lines.json`;
 
   let stars = [];
   let constellations = [];
