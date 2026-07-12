@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>Sky | Tazik</title>
+    <style>
+      body {
+        margin: 0;
+        background: black;
+        overflow: hidden;
+      }
+      canvas#starmap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+      .back {
+        position: fixed;
+        top: 24px;
+        left: 24px;
+        z-index: 2;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-size: 1rem;
+        color: #888888;
+        text-decoration: none;
+        padding: 0.6rem 0.8rem;
+        margin: -0.6rem -0.8rem;
+      }
+      .back:hover { color: #a18bf0; }
+      .location-info {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        font-family: monospace;
+        font-size: 9px;
+        color: white;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="starmap"></canvas>
+    <a class="back" href="/" aria-label="home">~/</a>
+    <div class="location-info" id="location-info">locating...</div>
+    <script src="/starmap.js"></script>
+  </body>
+</html>
