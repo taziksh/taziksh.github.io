@@ -23,7 +23,7 @@ const notes = (await getCollection('notes', ({ data }) => data.public === true))
   <body>
     <main class="notes">
       <header>
-        <a class="home" href="/">$ tazik</a>
+        <a class="home" href="/" aria-label="home">~/</a>
         <h1>Notes</h1>
       </header>
       <ul>
@@ -78,10 +78,12 @@ const notes = (await getCollection('notes', ({ data }) => data.public === true))
         padding: 3rem 1.5rem 6rem;
       }
       .home {
-        font-family: monospace;
-        font-size: 0.85rem;
+        font-size: 1rem;
         color: var(--muted);
         text-decoration: none;
+        display: inline-block;
+        padding: 0.6rem 0.8rem;
+        margin: -0.6rem -0.8rem;
       }
       .home:hover { color: var(--accent); }
       h1 {
