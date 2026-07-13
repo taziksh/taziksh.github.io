@@ -32,7 +32,9 @@ EOF
 
 while IFS= read -r img; do
   [ -z "$img" ] && continue
-  if ! grep -qF "/notes/$(basename "$img")" "$public_notes"; then
+  filename=$(basename "$img")
+  if ! grep -qF "/notes/$filename" "$public_notes" &&
+     ! grep -qF "![[${filename}" "$public_notes"; then
     blocked="$blocked\n  $img (not referenced by any public note)"
   fi
 done <<EOF

@@ -1,4 +1,7 @@
 ---
+import { getCollection, render } from 'astro:content';
+import { isBookReview } from '../lib/notes';
+
 const FEED = 'https://www.goodreads.com/review/list_rss/69012250?shelf=read';
 
 // A review must be at least this many words to earn a spot on the page;
@@ -22,6 +25,8 @@ import fs from 'node:fs';
 // a refetch; production builds fetch once at build time.
 const CACHE_FILE = '.astro/goodreads-cache.json';
 const CACHE_TTL_MS = 30 * 60 * 1000;
+const COVER_CACHE_FILE = '.astro/book-cover-cache.json';
+const COVER_CACHE_VERSION = 2;
 
 let cache = { at: 0, books: null };
 try {
@@ -54,7 +59,101 @@ if (!cache.books || Date.now() - cache.at > CACHE_TTL_MS) {
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache));
   } catch {}
 }
-const books = cache.books;
+
+let coverCache = {};
+try {
+  const storedCoverCache = JSON.parse(fs.readFileSync(COVER_CACHE_FILE, 'utf8'));
+  if (storedCoverCache.version === COVER_CACHE_VERSION) {
+    coverCache = storedCoverCache.covers ?? {};
+  }
+} catch {}
+
+function normalized(value) {
+  return value
+    .normalize('NFKD')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
+    .toLocaleLowerCase();
+}
+
+async function findCover(title, author) {
+  const key = bookKey(title, author);
+  if (coverCache[key]) return coverCache[key];
+
+  const params = new URLSearchParams({
+    title,
+    fields:
+      'key,title,author_name,editions,editions.key,editions.title,editions.cover_i,editions.language',
+    limit: '5',
+    lang: 'en',
+  });
+  if (author) params.set('author', author);
+
+  try {
+    const response = await fetch(`https://openlibrary.org/search.json?${params}`);
+    if (!response.ok) return null;
+    const result = await response.json();
+    const wantedTitle = normalized(title);
+    const wantedAuthor = normalized(author);
+    const match = result.docs?.find((book) => {
+      const foundTitle = normalized(book.title ?? '');
+      const titleMatches =
+        foundTitle === wantedTitle ||
+        foundTitle.startsWith(`${wantedTitle} `) ||
+        wantedTitle.startsWith(`${foundTitle} `);
+      const authorMatches =
+        !wantedAuthor ||
+        book.author_name?.some((name) => normalized(name) === wantedAuthor);
+      return titleMatches && authorMatches && book.editions?.docs?.[0]?.cover_i;
+    });
+    const coverId = match?.editions?.docs?.[0]?.cover_i;
+    if (!coverId) return null;
+
+    const image = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
+    coverCache[key] = image;
+    return image;
+  } catch {
+    return null;
+  }
+}
+
+const localReviews = await Promise.all(
+  (
+    await getCollection(
+      'notes',
+      ({ data, id }) => data.public === true && isBookReview(id)
+    )
+  )
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .map(async (note) => ({
+      note,
+      Content: (await render(note)).Content,
+      image:
+        note.data.cover ??
+        note.data.image ??
+        (await findCover(note.data.title, note.data.author ?? '')),
+    }))
+);
+
+try {
+  fs.mkdirSync('.astro', { recursive: true });
+  fs.writeFileSync(
+    COVER_CACHE_FILE,
+    JSON.stringify({ version: COVER_CACHE_VERSION, covers: coverCache })
+  );
+} catch {}
+
+function bookKey(title, author) {
+  return `${title}\n${author}`.toLocaleLowerCase();
+}
+
+// A local review replaces the Goodreads copy of the same book.
+const localBookKeys = new Set(
+  localReviews.map(({ note }) => bookKey(note.data.title, note.data.author ?? ''))
+);
+const goodreadsBooks = cache.books.filter(
+  (book) => !localBookKeys.has(bookKey(book.title, book.author))
+);
 ---
 
 <!DOCTYPE html>
@@ -78,10 +177,27 @@ const books = cache.books;
         <h1>Books</h1>
       </header>
       {
-        books.map((book) => (
+        localReviews.map(({ note, Content, image }) => (
+          <details id={note.id.split('/').slice(1).join('/') || note.id}>
+            <summary>
+              {image ? (
+                <img class="cover" src={image} alt="" loading="lazy" />
+              ) : (
+                <span class="cover cover-placeholder" aria-hidden="true">▤</span>
+              )}
+              <span class="meta">
+                <span class="title">{note.data.title}</span>
+                {note.data.author && <span class="author">{note.data.author}</span>}
+              </span>
+            </summary>
+            <div class="review local-review"><Content /></div>
+          </details>
+        ))
+      }
+      {
+        goodreadsBooks.map((book) => (
           <details>
             <summary>
-              <span class="marker">▸</span>
               <img class="cover" src={book.image} alt="" loading="lazy" />
               <span class="meta">
                 <span class="title">{book.title}</span>
@@ -160,18 +276,21 @@ const books = cache.books;
         list-style: none;
       }
       summary::-webkit-details-marker { display: none; }
-      .marker {
-        color: var(--muted);
-        font-size: 0.8rem;
-        transition: transform 0.15s ease;
-        flex-shrink: 0;
-      }
-      details[open] .marker { transform: rotate(90deg); }
       .cover {
         width: 44px;
+        height: 66px;
         border-radius: 3px;
         display: block;
         flex-shrink: 0;
+        object-fit: cover;
+      }
+      .cover-placeholder {
+        box-sizing: border-box;
+        display: grid;
+        place-items: center;
+        background: color-mix(in srgb, var(--muted) 12%, transparent);
+        color: var(--muted);
+        font-size: 1.2rem;
       }
       .meta { min-width: 0; }
       .title {
@@ -188,10 +307,53 @@ const books = cache.books;
         font-size: 0.85rem;
       }
       .review {
-        margin: 0.9rem 0 0 calc(0.8rem + 1rem + 44px + 1rem);
+        margin: 0.9rem 0 0 calc(44px + 1rem);
         font-size: 0.92rem;
         color: var(--ink);
       }
+      .local-review :global(p) { margin: 0 0 1em; }
+      .local-review :global(p:last-child) { margin-bottom: 0; }
+      .local-review :global(a) { color: var(--accent); }
+      .local-review :global(img) {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+      }
+      .local-review :global(.image-caption) {
+        display: block;
+        width: fit-content;
+        max-width: 100%;
+        margin: -0.85em auto 1.6em;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.72em;
+        line-height: 1.35;
+      }
+      .local-review :global(.image-caption a) {
+        color: inherit;
+        text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+      }
+      .local-review :global(.image-caption a:hover) { color: var(--accent); }
+      .local-review :global(blockquote) {
+        position: relative;
+        margin: 3rem 0;
+        padding: 0;
+        font-size: 1.05em;
+        line-height: 1.65;
+        color: var(--ink-strong);
+      }
+      .local-review :global(blockquote p:last-child) { margin-bottom: 0; }
+      .local-review :global(blockquote p:first-child::before),
+      .local-review :global(blockquote p:last-child::after) {
+        font-family: 'Fraunces', serif;
+        font-size: 2.42em;
+        line-height: 0;
+        vertical-align: -0.35em;
+        color: var(--accent);
+      }
+      .local-review :global(blockquote p:first-child::before) { content: '\201C\00A0'; }
+      .local-review :global(blockquote p:last-child::after) { content: '\00A0\201D'; }
     </style>
   </body>
 </html>

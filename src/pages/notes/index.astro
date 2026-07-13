@@ -1,9 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
+import { isBookReview } from '../../lib/notes';
 
-const notes = (await getCollection('notes', ({ data }) => data.public === true)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
+const notes = (
+  await getCollection('notes', ({ data, id }) => data.public === true && !isBookReview(id))
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <!DOCTYPE html>
