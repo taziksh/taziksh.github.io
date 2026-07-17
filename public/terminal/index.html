@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminal | Tazik</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #141417; }
+  #term { max-width: 700px; height: 100%; margin: 0 auto; padding: 56px 24px 24px; }
+</style>
+</head>
+<body>
+<div id="term"></div>
+<script type="module">
+import { loadLM } from './lm.js';
+
+const term = new Terminal({
+  cursorBlink: true,
+  fontSize: 14,
+  fontFamily: '"SF Mono", Menlo, monospace',
+  theme: {
+    background: '#141417',
+    foreground: '#d6d6d6',
+    cursor: '#a18bf0',
+    selectionBackground: '#3a3a4a',
+    brightBlack: '#6a6a72',
+  },
+});
+const fit = new FitAddon.FitAddon();
+term.loadAddon(fit);
+term.loadAddon(new WebLinksAddon.WebLinksAddon());
+term.open(document.getElementById('term'));
+fit.fit();
+addEventListener('resize', () => fit.fit());
+term.focus();
+
+const write = (s) => term.write(s.replace(/\n/g, '\r\n'));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const PROGRAMS = [{
+  name: 'transformer',
+  desc: 'language model (22.7M parameters)',
+  url: 'https://github.com/taziksh/assignment1-basics',
+}];
+let mode = 'shell';
+let line = '';
+let busy = false;
+let lm = null;
+
+const prompt = () => { term.write(mode === 'shell' ? '$ ' : '> '); line = ''; };
+
+function ls() {
+  term.write(PROGRAMS.map((p) => p.name).join('  ') + '\r\n');
+}
+
+function help() {
+  const rows = [
+    ['ls', 'list directory contents'],
+    ['man [name]', 'an interface to the reference manuals'],
+    ...PROGRAMS.map((p) => [p.name, p.desc]),
+  ];
+  const w = Math.max(...rows.map(([c]) => c.length)) + 3;
+  for (const [c, d] of rows) term.write(c.padEnd(w) + d + '\r\n');
+}
+
+function man(arg) {
+  if (!arg) { term.write("What manual page do you want?\r\nFor example, try 'man man'.\r\n"); return; }
+  if (arg === 'man') { term.write('man - an interface to the system reference manuals\r\n'); return; }
+  const p = PROGRAMS.find((x) => x.name === arg);
+  if (!p) { term.write(`No manual entry for ${arg}\r\n`); return; }
+  const hdr = `${p.name.toUpperCase()}(1)`;
+  const cols = term.cols;
+  const mid = 'User Commands';
+  const pad = Math.max(1, Math.floor((cols - hdr.length * 2 - mid.length) / 2));
+  term.write(hdr + ' '.repeat(pad) + mid + ' '.repeat(pad) + hdr + '\r\n\r\n');
+  term.write('\x1b[1mNAME\x1b[0m\r\n');
+  term.write(`       ${p.name} - ${p.desc}\r\n\r\n`);
+  term.write('\x1b[1mSYNOPSIS\x1b[0m\r\n');
+  term.write(`       ${p.name}\r\n\r\n`);
+  term.write('\x1b[1mSEE ALSO\x1b[0m\r\n');
+  term.write(`       ${p.url}\r\n`);
+}
+
+async function startStories(program) {
+  mode = 'story';
+  if (!lm) {
+    term.write('loading · 39 MB');
+    try {
+      lm = await loadLM();
+    } catch (e) {
+      term.write('\r\x1b[Kfailed to load\r\n');
+      console.error(e);
+      mode = 'shell';
+      return;
+    }
+    term.write('\r\x1b[K');
+  }
+}
+
+async function generate() {
+  busy = true;
+  const p = line.trim() || 'Once upon a time';
+  term.write('\r\n\r\n');
+  write(p);
+  let prev = '';
+  const res = await lm.generate(p, {
+    onToken: (id, genText) => {
+      write(genText.slice(prev.length));
+      prev = genText;
+    },
+  });
+  term.write('\r\n\r\n');
+  busy = false;
+  console.log('[term] done', res.tps.toFixed(1), 'tok/s');
+  document.body.dataset.done = '1';
+}
+
+async function onEnter() {
+  const cmd = line.trim();
+  if (mode === 'story') { await generate(); prompt(); return; }
+  term.write('\r\n');
+  if (cmd === '') { prompt(); return; }
+  if (cmd === 'ls') { ls(); prompt(); return; }
+  if (cmd === 'help') { help(); prompt(); return; }
+  if (cmd.split(/\s+/)[0] === 'man') { man(cmd.split(/\s+/)[1]); prompt(); return; }
+  if (cmd === 'clear') { term.clear(); prompt(); return; }
+  const name = cmd.replace(/^\.\//, '');
+  const program = PROGRAMS.find((p) => p.name === name);
+  if (program) { await startStories(program); prompt(); return; }
+  term.write(`bash: ${cmd.split(/\s+/)[0]}: command not found\r\n`);
+  prompt();
+}
+
+term.onData((d) => {
+  if (busy) return;
+  if (d === '\r') { onEnter(); return; }
+  if (d === '\x03') {
+    term.write('^C\r\n');
+    if (mode === 'story') mode = 'shell';
+    prompt();
+    return;
+  }
+  if (d === '\x7f') {
+    if (line.length) { line = line.slice(0, -1); term.write('\b \b'); }
+    return;
+  }
+  if (d === '\t') {
+    if (mode !== 'shell' || !line) return;
+    const names = PROGRAMS.map((p) => p.name);
+    let pool = [...names, 'ls', 'man', 'clear', 'help'];
+    let head = '';
+    if (line.startsWith('man ')) { pool = names; head = line.slice(4); }
+    else head = line;
+    const hits = pool.filter((c) => c.startsWith(head));
+    if (hits.length === 1) { term.write(hits[0].slice(head.length)); line = line.slice(0, line.length - head.length) + hits[0]; }
+    return;
+  }
+  if (d >= ' ') { line += d; term.write(d); }
+});
+
+async function autotype(cmd, fn) {
+  term.write('$ ');
+  await sleep(500);
+  for (const c of cmd) { term.write(c); await sleep(140); }
+  await sleep(300);
+  term.write('\r\n');
+  fn();
+}
+
+async function boot() {
+  busy = true;
+  await autotype('ls', ls);
+  busy = false;
+  prompt();
+  document.body.dataset.ready = '1';
+}
+await boot();
+
+if (new URLSearchParams(location.search).has('auto')) {
+  line = 'transformer';
+  await onEnter();
+  line = '';
+  await onEnter();
+}
+</script>
+</body>
+</html>
