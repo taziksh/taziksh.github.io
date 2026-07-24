@@ -1,7 +1,11 @@
 {
-  "run": "peachy-sweep-1_train_20260422_235759",
-  "checkpoint": "ckpt_step_159999.pt",
-  "val_loss": 1.2979,
+  "run": "resilient-sweep-3_train_20260423_025200",
+  "wandb_run_id": "qf2bbyuf",
+  "checkpoint": "ckpt_step_39999.pt",
+  "dataset": "TinyStoriesV2-GPT4",
+  "train_tokens": 40960000,
+  "batch_size": 4,
+  "val_loss": 1.4728,
   "params": 22696448,
   "dynamic_seq": true,
   "config": {
