@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Terminal | Tazik</title>
+<title>transformer.sh | Tazik</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
@@ -44,7 +44,8 @@ const write = (s) => term.write(s.replace(/\n/g, '\r\n'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const PROGRAMS = [{
-  name: 'transformer',
+  name: 'transformer.sh',
+  command: './transformer.sh',
   desc: 'language model (22.7M parameters)',
   url: 'https://github.com/taziksh/assignment1-basics',
 }];
@@ -63,7 +64,7 @@ function help() {
   const rows = [
     ['ls', 'list directory contents'],
     ['man [name]', 'an interface to the reference manuals'],
-    ...PROGRAMS.map((p) => [p.name, p.desc]),
+    ...PROGRAMS.map((p) => [p.command, p.desc]),
   ];
   const w = Math.max(...rows.map(([c]) => c.length)) + 3;
   for (const [c, d] of rows) term.write(c.padEnd(w) + d + '\r\n');
@@ -72,7 +73,7 @@ function help() {
 function man(arg) {
   if (!arg) { term.write("What manual page do you want?\r\nFor example, try 'man man'.\r\n"); return; }
   if (arg === 'man') { term.write('man - an interface to the system reference manuals\r\n'); return; }
-  const p = PROGRAMS.find((x) => x.name === arg);
+  const p = PROGRAMS.find((x) => x.name === arg.replace(/^\.\//, ''));
   if (!p) { term.write(`No manual entry for ${arg}\r\n`); return; }
   const hdr = `${p.name.toUpperCase()}(1)`;
   const cols = term.cols;
@@ -82,7 +83,7 @@ function man(arg) {
   term.write('\x1b[1mNAME\x1b[0m\r\n');
   term.write(`       ${p.name} - ${p.desc}\r\n\r\n`);
   term.write('\x1b[1mSYNOPSIS\x1b[0m\r\n');
-  term.write(`       ${p.name}\r\n\r\n`);
+  term.write(`       ${p.command}\r\n\r\n`);
   term.write('\x1b[1mSEE ALSO\x1b[0m\r\n');
   term.write(`       ${p.url}\r\n`);
 }
@@ -153,7 +154,8 @@ term.onData((d) => {
   if (d === '\t') {
     if (mode !== 'shell' || !line) return;
     const names = PROGRAMS.map((p) => p.name);
-    let pool = [...names, 'ls', 'man', 'clear', 'help'];
+    const commands = PROGRAMS.flatMap((p) => [p.name, p.command]);
+    let pool = [...commands, 'ls', 'man', 'clear', 'help'];
     let head = '';
     if (line.startsWith('man ')) { pool = names; head = line.slice(4); }
     else head = line;
@@ -183,7 +185,7 @@ async function boot() {
 await boot();
 
 if (new URLSearchParams(location.search).has('auto')) {
-  line = 'transformer';
+  line = './transformer.sh';
   await onEnter();
   line = '';
   await onEnter();
