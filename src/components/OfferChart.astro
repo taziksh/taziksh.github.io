@@ -194,13 +194,13 @@ const dy = sy(DEFAULT_P);
 <style>
   .offer-chart {
     margin: 2.8em 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
   h2 {
     margin: 0;
     color: var(--ink-strong);
-    font-family: 'Fraunces', serif;
     font-size: 1.15rem;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.2;
   }
   .readout {
@@ -209,7 +209,7 @@ const dy = sy(DEFAULT_P);
     align-items: center;
     gap: 0.3rem;
     margin: 0.35rem 0 0.5rem;
-    color: var(--muted);
+    color: color-mix(in srgb, var(--ink) 68%, var(--bg));
     font-size: 0.72rem;
     line-height: 1.35;
   }
@@ -240,10 +240,9 @@ const dy = sy(DEFAULT_P);
     top: 11%;
     right: 5.5%;
     color: var(--ink-strong);
-    font-family: 'Fraunces', serif;
     font-size: clamp(1.6rem, 5vw, 2.2rem);
     font-variant-numeric: tabular-nums;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1;
     pointer-events: none;
   }
@@ -270,7 +269,6 @@ const dy = sy(DEFAULT_P);
   }
   .contours text {
     fill: color-mix(in srgb, var(--ink) 68%, var(--bg));
-    font-family: 'Inter', system-ui, sans-serif;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -278,7 +276,6 @@ const dy = sy(DEFAULT_P);
   }
   .ticks text {
     fill: color-mix(in srgb, var(--ink) 68%, var(--bg));
-    font-family: 'Inter', system-ui, sans-serif;
     font-size: 10px;
     font-variant-numeric: tabular-nums;
   }
@@ -336,7 +333,7 @@ const dy = sy(DEFAULT_P);
     position: absolute;
     top: 50%;
     right: 0.3rem;
-    color: var(--muted);
+    color: color-mix(in srgb, var(--ink) 68%, var(--bg));
     font-size: 0.68rem;
     transform: translateY(-50%);
     pointer-events: none;
@@ -345,6 +342,14 @@ const dy = sy(DEFAULT_P);
     .offer-chart {
       margin-right: -0.25rem;
       margin-left: -0.25rem;
+    }
+    .contours text {
+      font-size: 14px;
+    }
+    .ticks text,
+    .ticks .x-label,
+    .ticks .y-label {
+      font-size: 13px;
     }
   }
   @media (prefers-reduced-motion: no-preference) {
