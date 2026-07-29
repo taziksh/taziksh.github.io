@@ -2,7 +2,8 @@
 const VIEW_W = 640;
 const VIEW_H = 400;
 const PAD = { left: 62, right: 22, top: 28, bottom: 58 };
-const N_MAX = 100;
+const N_MIN = 1;
+const N_MAX = 1000;
 const P_MAX = 20;
 const SAMPLES = 180;
 const DEFAULT_P = 5;
@@ -11,13 +12,14 @@ const LEVELS = [
   { value: 0.5, label: '50% chance', labelN: 12 },
   { value: 0.9, label: '90% chance', labelN: 42 },
 ];
-const X_TICKS = [0, 25, 50, 75, 100];
+const X_TICKS = [1, 10, 100, 1000];
 const Y_TICKS = [0, 5, 10, 15, 20];
 
 const plotW = VIEW_W - PAD.left - PAD.right;
 const plotH = VIEW_H - PAD.top - PAD.bottom;
 const baseY = VIEW_H - PAD.bottom;
-const sx = (n: number) => PAD.left + (n / N_MAX) * plotW;
+const logNSpan = Math.log(N_MAX / N_MIN);
+const sx = (n: number) => PAD.left + (Math.log(n / N_MIN) / logNSpan) * plotW;
 const sy = (p: number) => PAD.top + (1 - p / P_MAX) * plotH;
 const chance = (p: number, n: number) => 1 - Math.pow(1 - p / 100, n);
 const contourP = (level: number, n: number) =>
@@ -25,8 +27,8 @@ const contourP = (level: number, n: number) =>
 
 function contourPoints(level: number) {
   const points: Array<{ x: number; y: number }> = [];
-  for (let i = 1; i <= SAMPLES; i++) {
-    const n = (i / SAMPLES) * N_MAX;
+  for (let i = 0; i <= SAMPLES; i++) {
+    const n = N_MIN * Math.exp((i / SAMPLES) * logNSpan);
     const p = contourP(level, n);
     if (p <= P_MAX) points.push({ x: sx(n), y: sy(p) });
   }
@@ -42,6 +44,7 @@ function contourPath(level: number) {
 const cfg = {
   viewW: VIEW_W,
   viewH: VIEW_H,
+  nMin: N_MIN,
   nMax: N_MAX,
   pMax: P_MAX,
   ...PAD,
@@ -52,39 +55,6 @@ const dy = sy(DEFAULT_P);
 ---
 
 <figure class="offer-chart" data-offer-chart data-cfg={JSON.stringify(cfg)}>
-  <h2>Chance of at least one offer</h2>
-  <figcaption class="readout">
-    <span>Drag the plot, or set</span>
-    <label>
-      <span class="math-variable">n</span> =
-      <input
-        class="n-input"
-        type="number"
-        min="0"
-        max={N_MAX}
-        step="1"
-        value={DEFAULT_N}
-        aria-label="applications"
-      />
-    </label>
-    <span>and</span>
-    <label>
-      <span class="math-variable">p</span> =
-      <span class="input-suffix">
-        <input
-          class="p-input"
-          type="number"
-          min="0"
-          max={P_MAX}
-          step="1"
-          value={DEFAULT_P}
-          aria-label="success per application"
-        />
-        <span>%</span>
-      </span>
-    </label>
-  </figcaption>
-
   <div class="plot-wrap">
   <svg
     class="plot"
@@ -95,8 +65,9 @@ const dy = sy(DEFAULT_P);
   >
     <title id="offer-chart-title">Chance of at least one job offer</title>
     <desc id="offer-chart-description">
-      An interactive contour plot. Applications are on the horizontal axis and success per
-      application is on the vertical axis. Drag, click, or use the arrow keys to change both values.
+      An interactive contour plot. Applications from one to one thousand are on a logarithmic
+      horizontal axis and success per application is on the vertical axis. Drag, click, or use the
+      arrow keys to change both values.
     </desc>
 
     <g class="tick-marks" aria-hidden="true">
@@ -189,6 +160,33 @@ const dy = sy(DEFAULT_P);
     <output class="plot-result" aria-live="polite">{(defaultChance * 100).toFixed(1)}%</output>
   </div>
 
+  <figcaption class="readout">
+    <label>
+      <span class="math-variable">n</span> =
+      <input
+        class="n-input"
+        type="number"
+        min={N_MIN}
+        max={N_MAX}
+        step="1"
+        value={DEFAULT_N}
+        aria-label="applications"
+      />
+    </label>
+    <label>
+      <span class="math-variable">p</span> =
+      <input
+        class="p-input"
+        type="number"
+        min="0"
+        max={P_MAX}
+        step="1"
+        value={DEFAULT_P}
+        aria-label="success per application"
+      />
+      <span class="unit">%</span>
+    </label>
+  </figcaption>
 </figure>
 
 <style>
@@ -196,19 +194,13 @@ const dy = sy(DEFAULT_P);
     margin: 2.8em 0;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
-  h2 {
-    margin: 0;
-    color: var(--ink-strong);
-    font-size: 1.15rem;
-    font-weight: 600;
-    line-height: 1.2;
-  }
   .readout {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.3rem;
-    margin: 0.35rem 0 0.5rem;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0 0;
     color: color-mix(in srgb, var(--ink) 68%, var(--bg));
     font-size: 0.72rem;
     line-height: 1.35;
@@ -298,11 +290,9 @@ const dy = sy(DEFAULT_P);
     pointer-events: all;
   }
   .readout input {
-    appearance: textfield;
-    -moz-appearance: textfield;
     box-sizing: border-box;
-    width: 3.25rem;
-    height: 1.65rem;
+    width: 4.5rem;
+    height: 1.75rem;
     padding: 0.18rem 0.35rem;
     border: 1px solid color-mix(in srgb, var(--muted) 45%, transparent);
     border-radius: 5px;
@@ -313,30 +303,13 @@ const dy = sy(DEFAULT_P);
     font-variant-numeric: tabular-nums;
     text-align: center;
   }
-  .readout input::-webkit-inner-spin-button,
-  .readout input::-webkit-outer-spin-button {
-    margin: 0;
-    -webkit-appearance: none;
-  }
   .readout input:focus {
     border-color: var(--ink-strong);
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--ink-strong) 14%, transparent);
   }
-  .input-suffix {
-    position: relative;
-    display: block;
-  }
-  .input-suffix input {
-    padding-right: 1rem;
-  }
-  .input-suffix > span {
-    position: absolute;
-    top: 50%;
-    right: 0.3rem;
+  .unit {
     color: color-mix(in srgb, var(--ink) 68%, var(--bg));
     font-size: 0.68rem;
-    transform: translateY(-50%);
-    pointer-events: none;
   }
   @media (max-width: 520px) {
     .offer-chart {
@@ -369,6 +342,7 @@ const dy = sy(DEFAULT_P);
   type Cfg = {
     viewW: number;
     viewH: number;
+    nMin: number;
     nMax: number;
     pMax: number;
     left: number;
@@ -382,7 +356,8 @@ const dy = sy(DEFAULT_P);
     const plotW = c.viewW - c.left - c.right;
     const plotH = c.viewH - c.top - c.bottom;
     const baseY = c.viewH - c.bottom;
-    const sx = (n: number) => c.left + (n / c.nMax) * plotW;
+    const logNSpan = Math.log(c.nMax / c.nMin);
+    const sx = (n: number) => c.left + (Math.log(n / c.nMin) / logNSpan) * plotW;
     const sy = (p: number) => c.top + (1 - p / c.pMax) * plotH;
     const chance = (p: number, n: number) => 1 - Math.pow(1 - p / 100, n);
     const clamp = (value: number, min: number, max: number) =>
@@ -399,7 +374,7 @@ const dy = sy(DEFAULT_P);
     let dragging = false;
 
     function render() {
-      const n = clamp(Math.round(Number(nInput.value) || 0), 0, c.nMax);
+      const n = clamp(Math.round(Number(nInput.value) || c.nMin), c.nMin, c.nMax);
       const p = clamp(Math.round(Number(pInput.value) || 0), 0, c.pMax);
       const x = sx(n);
       const y = sy(p);
@@ -429,7 +404,8 @@ const dy = sy(DEFAULT_P);
       const bounds = plot.getBoundingClientRect();
       const x = ((event.clientX - bounds.left) / bounds.width) * c.viewW;
       const y = ((event.clientY - bounds.top) / bounds.height) * c.viewH;
-      nInput.value = `${Math.round(clamp(((x - c.left) / plotW) * c.nMax, 0, c.nMax))}`;
+      const nRatio = clamp((x - c.left) / plotW, 0, 1);
+      nInput.value = `${Math.round(c.nMin * Math.exp(nRatio * logNSpan))}`;
       pInput.value = `${Math.round(clamp((1 - (y - c.top) / plotH) * c.pMax, 0, c.pMax))}`;
       render();
     }
