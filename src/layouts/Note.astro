@@ -1,11 +1,13 @@
 ---
 import 'katex/dist/katex.min.css';
+import { formatNoteTitle } from '../lib/notes';
 
 interface Props {
   title: string;
   date: Date;
 }
 const { title, date } = Astro.props;
+const displayTitle = formatNoteTitle(title);
 const dateStr = date.toISOString().slice(0, 10);
 const dateHuman = date.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -27,7 +29,7 @@ const dateHuman = date.toLocaleDateString('en-US', {
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&display=swap"
       rel="stylesheet"
     />
-    <title>{title} | Tazik</title>
+    <title>{displayTitle} | Tazik</title>
   </head>
   <body>
     <main class="note">
@@ -39,7 +41,7 @@ const dateHuman = date.toLocaleDateString('en-US', {
       </a>
       <article>
         <header>
-          <h1>{title}</h1>
+          <h1>{displayTitle}</h1>
           <time datetime={dateStr}>{dateHuman}</time>
         </header>
         <slot />
