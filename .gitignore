@@ -2,6 +2,7 @@ node_modules/
 dist/
 .astro/
 games/lamar-core/target/
+lamar-dist/
 prototypes/
 .claude/
 .DS_Store

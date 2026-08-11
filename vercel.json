@@ -1,8 +1,5 @@
 {
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/lamar"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:lamar:host",
+  "outputDirectory": "lamar-dist"
 }

@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "build:lamar": "./scripts/build-lamar.sh",
+    "build:lamar:host": "sh ./scripts/build-lamar-host.sh",
     "test:lamar": "cargo test --manifest-path games/lamar-core/Cargo.toml",
     "preview": "astro preview",
     "prepare": "if [ -d .git ] && [ -w .git/config ]; then git config core.hooksPath .githooks; fi"
