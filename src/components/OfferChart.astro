@@ -35,9 +35,18 @@ function contourPoints(level: number) {
   return points;
 }
 
-function contourPath(level: number) {
+function contourPath(level: number, labelN: number) {
+  const labelX = sx(labelN);
+  const labelY = sy(contourP(level, labelN)) - 11;
+  let pen = false;
   return contourPoints(level)
-    .map(({ x, y }, index) => `${index ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`)
+    .map(({ x, y }) => {
+      if (Math.abs(x - labelX) < 38 && Math.abs(y - labelY) < 12) { pen = false; return ''; }
+      const cmd = pen ? 'L' : 'M';
+      pen = true;
+      return `${cmd}${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .filter(Boolean)
     .join('');
 }
 
@@ -96,15 +105,7 @@ const dy = sy(DEFAULT_P);
       {
         LEVELS.map((level) => (
           <>
-            <path d={contourPath(level.value)} />
-            <rect
-              class="contour-label-bg"
-              x={sx(level.labelN) - 39}
-              y={sy(contourP(level.value, level.labelN)) - 20}
-              width="78"
-              height="17"
-              rx="2"
-            />
+            <path d={contourPath(level.value, level.labelN)} />
             <text
               x={sx(level.labelN)}
               y={sy(contourP(level.value, level.labelN)) - 7}
@@ -255,9 +256,6 @@ const dy = sy(DEFAULT_P);
     fill: none;
     stroke: var(--muted);
     stroke-width: 1;
-  }
-  .contour-label-bg {
-    fill: var(--bg);
   }
   .contours text {
     fill: color-mix(in srgb, var(--ink) 68%, var(--bg));
