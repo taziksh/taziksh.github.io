@@ -2,39 +2,34 @@ const STATE_PLAYING: u32 = 1;
 const STATE_PAUSED: u32 = 2;
 const STATE_DEAD: u32 = 3;
 
-const INPUT_UP: u32 = 1;
-const INPUT_DOWN: u32 = 2;
-const MAX_BULLETS: usize = 8;
+const LAMAR_X: i32 = -45;
+const LAMAR_PROJECTILE_X: i32 = 227;
+const GOON_START_X: i32 = 605;
 
-#[derive(Clone, Copy)]
-struct Bullet {
-    x: f32,
-    y: f32,
-    active: bool,
-}
-
-const EMPTY_BULLET: Bullet = Bullet {
-    x: 0.0,
-    y: 0.0,
-    active: false,
-};
-
+/// A fixed-step reconstruction of the state in the original `Game.java`.
+///
+/// This deliberately preserves legacy quirks. Do not "improve" frame pacing,
+/// bounds, projectile travel, retry state, or collision rules here; those
+/// belong in the separately tracked remaster.
 struct Game {
     state: u32,
     difficulty: u32,
-    input: u32,
-    player_y: f32,
-    enemy_x: f32,
-    enemy_y: f32,
+    player_y: i32,
+    enemy_y: i32,
+    enemy_offset: i32,
+    projectile_roll: u32,
+    enemy_projectile_offset: i32,
+    enemy_projectile_x: i32,
+    enemy_projectile_y: i32,
+    enemy_projectile_active: bool,
     health: i32,
     max_health: i32,
     boost: i32,
     kills: i32,
-    player_bullets: [Bullet; MAX_BULLETS],
-    enemy_bullet: Bullet,
-    enemy_wave_shoots: bool,
-    fire_cooldown: f32,
-    hard_jitter_cooldown: f32,
+    laser_visible: bool,
+    laser_y: i32,
+    laser_end_x: i32,
+    accumulated_ms: f32,
     rng: u32,
 }
 
@@ -43,19 +38,22 @@ impl Game {
         Self {
             state: STATE_PLAYING,
             difficulty: 1,
-            input: 0,
-            player_y: 0.0,
-            enemy_x: 605.0,
-            enemy_y: 166.0,
+            player_y: 0,
+            enemy_y: 166,
+            enemy_offset: 0,
+            projectile_roll: 3,
+            enemy_projectile_offset: 0,
+            enemy_projectile_x: 0,
+            enemy_projectile_y: 0,
+            enemy_projectile_active: false,
             health: 400,
             max_health: 400,
             boost: 0,
             kills: 0,
-            player_bullets: [EMPTY_BULLET; MAX_BULLETS],
-            enemy_bullet: EMPTY_BULLET,
-            enemy_wave_shoots: false,
-            fire_cooldown: 0.0,
-            hard_jitter_cooldown: 0.0,
+            laser_visible: false,
+            laser_y: 200,
+            laser_end_x: LAMAR_PROJECTILE_X,
+            accumulated_ms: 0.0,
             rng: 0x4c41_4d41,
         }
     }
@@ -69,19 +67,21 @@ impl Game {
         };
         self.health = self.max_health;
         self.state = STATE_PLAYING;
-        self.input = 0;
-        self.player_y = 0.0;
-        self.enemy_x = 605.0;
-        self.enemy_y = 166.0;
+        self.player_y = 0;
+        self.enemy_offset = 0;
+        self.enemy_projectile_offset = 0;
+        self.enemy_projectile_x = 0;
+        self.enemy_projectile_y = 0;
+        self.enemy_projectile_active = false;
         self.boost = 0;
         self.kills = 0;
-        self.player_bullets = [EMPTY_BULLET; MAX_BULLETS];
-        self.enemy_bullet = EMPTY_BULLET;
-        self.enemy_wave_shoots = false;
-        self.fire_cooldown = 0.0;
-        self.hard_jitter_cooldown = 0.0;
+        self.laser_visible = false;
+        self.laser_y = 200;
+        self.laser_end_x = LAMAR_PROJECTILE_X;
+        self.accumulated_ms = 0.0;
         self.rng = if seed == 0 { 0x4c41_4d41 } else { seed };
-        self.respawn_enemy();
+        self.enemy_y = self.random_enemy_y();
+        self.projectile_roll = self.random_projectile_roll();
     }
 
     fn next_random(&mut self) -> u32 {
@@ -93,149 +93,160 @@ impl Game {
         value
     }
 
-    fn random_enemy_y(&mut self) -> f32 {
-        (self.next_random() % 333) as f32
+    fn random_enemy_y(&mut self) -> i32 {
+        (self.next_random() % 333) as i32
     }
 
-    fn respawn_enemy(&mut self) {
-        self.enemy_x = 605.0;
-        self.enemy_y = self.random_enemy_y();
-        let projectile_roll = (self.next_random() % 3) + 1;
-        self.enemy_wave_shoots = match self.difficulty {
-            1 => projectile_roll == 1,
-            2 => projectile_roll <= 2,
-            _ => true,
-        };
-        self.enemy_bullet = if self.enemy_wave_shoots {
-            Bullet {
-                x: self.enemy_x - 30.0,
-                y: self.enemy_y + 75.0,
-                active: true,
-            }
-        } else {
-            EMPTY_BULLET
-        };
+    fn random_projectile_roll(&mut self) -> u32 {
+        (self.next_random() % 3) + 1
     }
 
-    fn enemy_speed(&self) -> f32 {
+    fn enemy_x(&self) -> i32 {
+        GOON_START_X - self.enemy_offset
+    }
+
+    fn wave_has_projectile(&self) -> bool {
         match self.difficulty {
-            1 => 240.0,
-            2 => 120.0 + self.kills as f32 * 18.0,
-            _ => 120.0 + self.kills as f32 * 22.0,
+            1 => self.projectile_roll == 1,
+            2 => self.projectile_roll == 1 || self.projectile_roll == 2,
+            _ => true,
         }
     }
 
-    fn enemy_bullet_speed(&self) -> f32 {
-        if self.difficulty == 1 {
-            60.0
-        } else {
-            120.0
+    fn tick_duration_ms(&self) -> f32 {
+        let sleep_ms = match self.difficulty {
+            1 if self.wave_has_projectile() => 8,
+            2 if self.wave_has_projectile() => 6,
+            3 => 7,
+            _ => 5,
+        };
+        sleep_ms as f32
+    }
+
+    fn update(&mut self, dt_seconds: f32) {
+        if self.state != STATE_PLAYING {
+            return;
+        }
+
+        self.accumulated_ms += dt_seconds.clamp(0.0, 0.25) * 1000.0;
+        let mut ticks = 0;
+        while self.state == STATE_PLAYING && ticks < 64 {
+            let tick_ms = self.tick_duration_ms();
+            if self.accumulated_ms < tick_ms {
+                break;
+            }
+            self.accumulated_ms -= tick_ms;
+            self.legacy_tick();
+            ticks += 1;
+        }
+    }
+
+    fn legacy_tick(&mut self) {
+        if self.enemy_x() < -180 {
+            self.health -= 20;
+            self.enemy_y = self.random_enemy_y();
+            self.enemy_offset = 0;
+            self.projectile_roll = self.random_projectile_roll();
+            // Game.java only reset this offset when the new random roll was 2.
+            if self.projectile_roll == 2 {
+                self.enemy_projectile_offset = 0;
+            }
+        }
+
+        if self.boost == 25 {
+            self.health += 50;
+            self.boost = 0;
+        }
+
+        self.update_enemy_projectile();
+
+        // The original only entered its death branch when xGoonProj > 0.
+        if self.enemy_projectile_x > 0 {
+            let relative_y = self.enemy_projectile_y - self.player_y;
+            let projectile_hit =
+                LAMAR_X + 190 >= self.enemy_projectile_x && relative_y < 255 && relative_y > 95;
+            if self.health <= 0 || projectile_hit {
+                self.state = STATE_DEAD;
+                return;
+            }
+        }
+
+        match self.difficulty {
+            1 => self.enemy_offset += 4,
+            2 => self.enemy_offset += 2 + self.kills,
+            _ => {
+                self.enemy_y = self.random_enemy_y();
+                self.enemy_offset += 2 + self.kills;
+            }
+        }
+    }
+
+    fn update_enemy_projectile(&mut self) {
+        if !self.wave_has_projectile() {
+            self.enemy_projectile_x = 0;
+            self.enemy_projectile_y = 0;
+            self.enemy_projectile_active = false;
+            return;
+        }
+
+        self.enemy_projectile_x = self.enemy_x() - 30 - self.enemy_projectile_offset;
+        self.enemy_projectile_y = self.enemy_y + 75;
+        self.enemy_projectile_active = true;
+        self.enemy_projectile_offset += if self.difficulty == 1 { 1 } else { 2 };
+    }
+
+    fn nudge_player(&mut self, direction: i32) {
+        if self.state == STATE_PLAYING {
+            self.player_y += 15 * direction.signum();
+        }
+    }
+
+    fn register_input(&mut self) {
+        if self.state == STATE_PLAYING {
+            // This increment lived inside the original input loop and occurred
+            // for every character, whether or not the key had a game action.
+            self.enemy_offset += 3;
         }
     }
 
     fn fire(&mut self) {
-        if self.state != STATE_PLAYING || self.fire_cooldown > 0.0 {
-            return;
-        }
-
-        if let Some(bullet) = self.player_bullets.iter_mut().find(|bullet| !bullet.active) {
-            *bullet = Bullet {
-                x: 227.0,
-                y: self.player_y + 200.0,
-                active: true,
-            };
-            self.fire_cooldown = 0.14;
-        }
-    }
-
-    fn nudge_player(&mut self, direction: i32) {
-        if self.state != STATE_PLAYING {
-            return;
-        }
-        self.player_y = (self.player_y + 15.0 * direction.signum() as f32).clamp(-75.0, 225.0);
-    }
-
-    fn register_kill(&mut self) {
-        self.kills += 1;
-        if self.difficulty == 2 {
-            self.boost += 5;
-            if self.boost >= 25 {
-                self.health += 50;
-                self.boost = 0;
-            }
-        }
-        self.respawn_enemy();
-    }
-
-    fn update(&mut self, dt: f32) {
         if self.state != STATE_PLAYING {
             return;
         }
 
-        let dt = dt.clamp(0.0, 0.05);
-        self.fire_cooldown = (self.fire_cooldown - dt).max(0.0);
-        self.hard_jitter_cooldown -= dt;
+        self.laser_visible = true;
+        self.laser_y = self.player_y + 200;
+        self.laser_end_x = LAMAR_PROJECTILE_X;
 
-        if self.input & INPUT_UP != 0 {
-            self.player_y -= 210.0 * dt;
-        }
-        if self.input & INPUT_DOWN != 0 {
-            self.player_y += 210.0 * dt;
-        }
-        self.player_y = self.player_y.clamp(-75.0, 225.0);
-
-        self.enemy_x -= self.enemy_speed() * dt;
-        if self.difficulty == 3 && self.hard_jitter_cooldown <= 0.0 {
-            self.enemy_y = self.random_enemy_y();
-            self.hard_jitter_cooldown = 0.08;
-        }
-
-        if self.enemy_x < -180.0 {
-            self.health -= 20;
-            if self.health <= 0 {
-                self.state = STATE_DEAD;
-                return;
-            }
-            self.respawn_enemy();
-        }
-
-        let mut enemy_was_hit = false;
-        for bullet in &mut self.player_bullets {
-            if !bullet.active {
-                continue;
-            }
-
-            bullet.x += 500.0 * dt;
-            let horizontal_hit =
-                bullet.x + 60.0 >= self.enemy_x && bullet.x <= self.enemy_x + 200.0;
-            let vertical_hit = bullet.y - self.enemy_y > 1.0 && bullet.y - self.enemy_y < 150.0;
+        let enemy_x = self.enemy_x();
+        let mut laser_x = LAMAR_PROJECTILE_X;
+        let mut hit = false;
+        while laser_x < 640 {
+            self.laser_end_x = laser_x;
+            let horizontal_hit = laser_x >= enemy_x && laser_x <= enemy_x + 6;
+            let relative_y = self.laser_y - self.enemy_y;
+            let vertical_hit = relative_y > 1 && relative_y < 150;
             if horizontal_hit && vertical_hit {
-                bullet.active = false;
-                enemy_was_hit = true;
+                hit = true;
                 break;
             }
-            if bullet.x > 640.0 {
-                bullet.active = false;
-            }
+            laser_x += 8;
         }
 
-        if enemy_was_hit {
-            self.register_kill();
-        }
-
-        if self.enemy_bullet.active {
-            self.enemy_bullet.x -= self.enemy_bullet_speed() * dt;
-            let horizontal_hit =
-                self.enemy_bullet.x <= 145.0 && self.enemy_bullet.x + 50.0 >= -45.0;
-            let relative_y = self.enemy_bullet.y - self.player_y;
-            let vertical_hit = relative_y > 95.0 && relative_y < 255.0;
-            if horizontal_hit && vertical_hit {
-                self.enemy_bullet.active = false;
-                self.state = STATE_DEAD;
-            } else if self.enemy_bullet.x < -60.0 {
-                self.enemy_bullet.active = false;
+        if hit {
+            self.enemy_offset = 0;
+            self.enemy_y = self.random_enemy_y();
+            self.kills += 1;
+            if self.difficulty == 2 {
+                self.boost += 5;
             }
+            // A laser kill did not reroll projectile probability or reset the
+            // enemy projectile offset in Game.java.
         }
+    }
+
+    fn after_render(&mut self) {
+        self.laser_visible = false;
     }
 
     fn toggle_pause(&mut self) {
@@ -244,6 +255,18 @@ impl Game {
             STATE_PAUSED => STATE_PLAYING,
             other => other,
         };
+    }
+
+    fn legacy_retry(&mut self) {
+        if self.state != STATE_DEAD {
+            return;
+        }
+        // The original retry always restored 200 HP and kept kills, boost,
+        // enemy position, projectile roll, and offsets intact.
+        self.health = 200;
+        self.player_y = 0;
+        self.state = STATE_PLAYING;
+        self.laser_visible = false;
     }
 }
 
@@ -259,7 +282,7 @@ fn game_ref() -> &'static Game {
 
 #[no_mangle]
 pub extern "C" fn lamar_version() -> u32 {
-    1
+    2
 }
 
 #[no_mangle]
@@ -269,10 +292,7 @@ pub extern "C" fn lamar_reset(difficulty: u32, seed: u32) {
 
 #[no_mangle]
 pub extern "C" fn lamar_restart() {
-    let game = game_mut();
-    let difficulty = game.difficulty;
-    let seed = game.next_random();
-    game.reset(difficulty, seed);
+    game_mut().legacy_retry();
 }
 
 #[no_mangle]
@@ -281,8 +301,13 @@ pub extern "C" fn lamar_update(dt: f32) {
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_set_input(input: u32) {
-    game_mut().input = input & (INPUT_UP | INPUT_DOWN);
+pub extern "C" fn lamar_nudge_player(direction: i32) {
+    game_mut().nudge_player(direction);
+}
+
+#[no_mangle]
+pub extern "C" fn lamar_register_input() {
+    game_mut().register_input();
 }
 
 #[no_mangle]
@@ -291,8 +316,8 @@ pub extern "C" fn lamar_fire() {
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_nudge_player(direction: i32) {
-    game_mut().nudge_player(direction);
+pub extern "C" fn lamar_after_render() {
+    game_mut().after_render();
 }
 
 #[no_mangle]
@@ -311,17 +336,17 @@ pub extern "C" fn lamar_difficulty() -> u32 {
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_player_y() -> f32 {
+pub extern "C" fn lamar_player_y() -> i32 {
     game_ref().player_y
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_enemy_x() -> f32 {
-    game_ref().enemy_x
+pub extern "C" fn lamar_enemy_x() -> i32 {
+    game_ref().enemy_x()
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_enemy_y() -> f32 {
+pub extern "C" fn lamar_enemy_y() -> i32 {
     game_ref().enemy_y
 }
 
@@ -346,42 +371,33 @@ pub extern "C" fn lamar_kills() -> i32 {
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_bullet_active(index: u32) -> u32 {
-    game_ref()
-        .player_bullets
-        .get(index as usize)
-        .map_or(0, |bullet| bullet.active as u32)
+pub extern "C" fn lamar_laser_visible() -> u32 {
+    game_ref().laser_visible as u32
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_bullet_x(index: u32) -> f32 {
-    game_ref()
-        .player_bullets
-        .get(index as usize)
-        .map_or(0.0, |bullet| bullet.x)
+pub extern "C" fn lamar_laser_y() -> i32 {
+    game_ref().laser_y
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_bullet_y(index: u32) -> f32 {
-    game_ref()
-        .player_bullets
-        .get(index as usize)
-        .map_or(0.0, |bullet| bullet.y)
+pub extern "C" fn lamar_laser_end_x() -> i32 {
+    game_ref().laser_end_x
 }
 
 #[no_mangle]
 pub extern "C" fn lamar_enemy_bullet_active() -> u32 {
-    game_ref().enemy_bullet.active as u32
+    game_ref().enemy_projectile_active as u32
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_enemy_bullet_x() -> f32 {
-    game_ref().enemy_bullet.x
+pub extern "C" fn lamar_enemy_bullet_x() -> i32 {
+    game_ref().enemy_projectile_x
 }
 
 #[no_mangle]
-pub extern "C" fn lamar_enemy_bullet_y() -> f32 {
-    game_ref().enemy_bullet.y
+pub extern "C" fn lamar_enemy_bullet_y() -> i32 {
+    game_ref().enemy_projectile_y
 }
 
 #[cfg(test)]
@@ -400,59 +416,106 @@ mod tests {
     }
 
     #[test]
-    fn passing_enemy_costs_twenty_health() {
+    fn keypresses_move_fifteen_pixels_without_bounds() {
         let mut game = Game::new();
         game.reset(1, 1);
-        game.enemy_x = -181.0;
-        game.update(0.016);
-        assert_eq!(game.health, 380);
-        assert_eq!(game.enemy_x, 605.0);
+        for _ in 0..20 {
+            game.nudge_player(1);
+        }
+        assert_eq!(game.player_y, 300);
+        game.nudge_player(-1);
+        assert_eq!(game.player_y, 285);
     }
 
     #[test]
-    fn meh_boost_heals_after_five_kills() {
+    fn every_input_advances_the_goon_three_pixels() {
+        let mut game = Game::new();
+        game.reset(1, 1);
+        game.register_input();
+        assert_eq!(game.enemy_offset, 3);
+    }
+
+    #[test]
+    fn easy_legacy_ticks_move_four_pixels_each() {
+        let mut game = Game::new();
+        game.reset(1, 1);
+        game.projectile_roll = 3;
+        game.update(0.050);
+        assert_eq!(game.enemy_offset, 40);
+    }
+
+    #[test]
+    fn passing_enemy_costs_twenty_health_and_rerolls() {
+        let mut game = Game::new();
+        game.reset(1, 1);
+        game.projectile_roll = 3;
+        game.enemy_offset = 786;
+        game.legacy_tick();
+        assert_eq!(game.health, 380);
+        assert_eq!(game.enemy_offset, 4);
+    }
+
+    #[test]
+    fn laser_sweeps_instantly_and_uses_the_six_pixel_hit_window() {
+        let mut game = Game::new();
+        game.reset(1, 1);
+        game.player_y = 0;
+        game.enemy_y = 100;
+        game.enemy_offset = GOON_START_X - 403;
+        game.fire();
+        assert!(game.laser_visible);
+        assert_eq!(game.laser_end_x, 403);
+        assert_eq!(game.kills, 1);
+        assert_eq!(game.enemy_offset, 0);
+    }
+
+    #[test]
+    fn meh_boost_heals_at_exactly_twenty_five() {
         let mut game = Game::new();
         game.reset(2, 1);
         game.health = 100;
-        for _ in 0..5 {
-            game.register_kill();
-        }
-        assert_eq!(game.kills, 5);
-        assert_eq!(game.boost, 0);
+        game.boost = 25;
+        game.legacy_tick();
         assert_eq!(game.health, 150);
+        assert_eq!(game.boost, 0);
     }
 
     #[test]
-    fn pause_freezes_the_game() {
+    fn pause_freezes_legacy_ticks() {
         let mut game = Game::new();
         game.reset(1, 1);
-        let enemy_x = game.enemy_x;
         game.toggle_pause();
-        game.update(0.05);
+        game.update(0.050);
         assert_eq!(game.state, STATE_PAUSED);
-        assert_eq!(game.enemy_x, enemy_x);
+        assert_eq!(game.enemy_offset, 0);
     }
 
     #[test]
-    fn quick_taps_keep_the_original_fifteen_pixel_step() {
+    fn retry_restores_two_hundred_and_keeps_legacy_state() {
         let mut game = Game::new();
-        game.reset(1, 1);
-        game.nudge_player(1);
-        assert_eq!(game.player_y, 15.0);
-        game.nudge_player(-1);
-        assert_eq!(game.player_y, 0.0);
+        game.reset(3, 1);
+        game.state = STATE_DEAD;
+        game.kills = 7;
+        game.boost = 10;
+        game.enemy_offset = 321;
+        game.legacy_retry();
+        assert_eq!(game.health, 200);
+        assert_eq!(game.player_y, 0);
+        assert_eq!(game.kills, 7);
+        assert_eq!(game.boost, 10);
+        assert_eq!(game.enemy_offset, 321);
+        assert_eq!(game.state, STATE_PLAYING);
     }
 
     #[test]
-    fn enemy_projectile_hit_is_fatal_like_the_java_game() {
+    fn enemy_projectile_hit_is_immediately_fatal() {
         let mut game = Game::new();
         game.reset(1, 1);
-        game.enemy_bullet = Bullet {
-            x: 145.0,
-            y: 150.0,
-            active: true,
-        };
-        game.update(0.0);
+        game.projectile_roll = 1;
+        game.enemy_y = 100;
+        game.enemy_offset = 420;
+        game.enemy_projectile_offset = 10;
+        game.legacy_tick();
         assert_eq!(game.state, STATE_DEAD);
     }
 }

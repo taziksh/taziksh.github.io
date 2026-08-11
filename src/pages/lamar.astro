@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Play Lamar's Space Adventures, restored from the original Java game with its artwork and soundtrack intact."
+      content="Play a faithful browser remake of Lamar's Space Adventures, preserving the original Java game's artwork, soundtrack, timing, and quirks."
     />
     <title>Lamar's Space Adventures — Tazik</title>
     <link rel="icon" href="/favicon.ico" />
@@ -21,11 +21,15 @@
     <main class="lamar-page">
       <header>
         <a class="home" href="/" aria-label="Back home"><span class="signature"></span></a>
-        <div class="eyebrow">restored from Java · powered by WebAssembly</div>
+        <div class="eyebrow">faithful Java remake · powered by WebAssembly</div>
         <h1>Lamar's Space Adventures</h1>
         <p>
           My Grade 10 side-scroller, back in orbit with the original drawings,
-          difficulty rules, and 3:39 soundtrack intact.
+          3:39 soundtrack, timing, controls, and strange little bugs intact.
+        </p>
+        <p class="legacy-note">
+          <strong>Legacy first:</strong> this version intentionally keeps the original pacing and
+          weaknesses. A separately labeled remaster can improve them after the baseline is faithful.
         </p>
       </header>
 
@@ -71,8 +75,9 @@
         <div>
           <h2>the restoration</h2>
           <p>
-            Rust/WebAssembly now runs the game state and collisions. Canvas and Web Audio
-            provide the browser window, controls, original images, and unmodified WAV soundtrack.
+            Rust/WebAssembly reconstructs the original loop, including discrete input,
+            frame-dependent offsets, instant laser sweep, pause behavior, and retry quirks.
+            Canvas and Web Audio replace only the old desktop runtime.
           </p>
           <p><a href="https://github.com/taziksh/lamar-game">view the 2015-ish Java original ↗</a></p>
         </div>
@@ -93,6 +98,8 @@
   header { max-width: 690px; }
   header h1 { margin: 0.35rem 0 0.75rem; }
   header p { margin: 0; color: var(--muted); }
+  header .legacy-note { margin-top: 1rem; font-size: 0.9rem; }
+  .legacy-note strong { color: var(--ink); font-weight: 600; }
   .eyebrow {
     margin-top: 2.2rem;
     color: var(--accent);
