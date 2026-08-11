@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Play Lamar's Space Adventures, restored from the original Java game with its artwork and soundtrack intact."
+    />
+    <title>Lamar's Space Adventures — Tazik</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/site.css" />
+  </head>
+  <body>
+    <main class="lamar-page">
+      <header>
+        <a class="home" href="/" aria-label="Back home"><span class="signature"></span></a>
+        <div class="eyebrow">restored from Java · powered by WebAssembly</div>
+        <h1>Lamar's Space Adventures</h1>
+        <p>
+          My Grade 10 side-scroller, back in orbit with the original drawings,
+          difficulty rules, and 3:39 soundtrack intact.
+        </p>
+      </header>
+
+      <section class="game-shell" aria-label="Lamar's Space Adventures game">
+        <div class="game-toolbar">
+          <div class="stats" aria-label="Game statistics">
+            <span>mode <strong id="difficulty-value">—</strong></span>
+            <span>health <strong id="health-value">—</strong></span>
+            <span>boost <strong id="boost-value">—</strong></span>
+            <span>kills <strong id="kills-value">—</strong></span>
+          </div>
+          <button id="audio-toggle" type="button" aria-pressed="true">sound: on</button>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas
+            id="lamar-canvas"
+            width="640"
+            height="500"
+            tabindex="0"
+            aria-label="Lamar's Space Adventures. Use W and S or the arrow keys to move, Space to fire, and P to pause."
+          >
+            Your browser needs Canvas and WebAssembly to play Lamar's Space Adventures.
+          </canvas>
+        </div>
+
+        <div id="touch-controls" class="touch-controls" hidden aria-label="Game controls">
+          <button type="button" data-action="up" aria-label="Move up">↑</button>
+          <button type="button" data-action="down" aria-label="Move down">↓</button>
+          <button type="button" data-action="fire" class="fire">fire</button>
+          <button type="button" data-action="pause" aria-label="Pause or resume">Ⅱ</button>
+        </div>
+
+        <p id="game-status" class="game-status" aria-live="polite">Loading the original assets…</p>
+      </section>
+
+      <section class="field-notes" aria-labelledby="controls-title">
+        <div>
+          <h2 id="controls-title">flight manual</h2>
+          <p><kbd>W</kbd>/<kbd>S</kbd> or <kbd>↑</kbd>/<kbd>↓</kbd> move Lamar.</p>
+          <p><kbd>Space</kbd> fires. <kbd>P</kbd> pauses. After a crash, <kbd>R</kbd> retries and <kbd>Q</kbd> quits.</p>
+        </div>
+        <div>
+          <h2>the restoration</h2>
+          <p>
+            Rust/WebAssembly now runs the game state and collisions. Canvas and Web Audio
+            provide the browser window, controls, original images, and unmodified WAV soundtrack.
+          </p>
+          <p><a href="https://github.com/taziksh/lamar-game">view the 2015-ish Java original ↗</a></p>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/lamar/game.js"></script>
+  </body>
+</html>
+
+<style>
+  .lamar-page {
+    width: min(100%, 900px);
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 5rem;
+    gap: 2.25rem;
+  }
+
+  header { max-width: 690px; }
+  header h1 { margin: 0.35rem 0 0.75rem; }
+  header p { margin: 0; color: var(--muted); }
+  .eyebrow {
+    margin-top: 2.2rem;
+    color: var(--accent);
+    font: 600 0.72rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .game-shell {
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+    border-radius: 18px;
+    background: #09090d;
+    box-shadow: 0 18px 55px color-mix(in srgb, #000 18%, transparent);
+  }
+
+  .game-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 46px;
+    padding: 0.55rem 0.75rem 0.55rem 1rem;
+    color: #aaa;
+    background: #15151b;
+    font: 0.68rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 0.45rem 1rem; }
+  .stats strong { color: #f1f1f3; font-weight: 500; }
+  .game-toolbar button,
+  .touch-controls button {
+    border: 1px solid #3a3a43;
+    border-radius: 999px;
+    color: #e9e9eb;
+    background: #212129;
+    font: inherit;
+    cursor: pointer;
+  }
+  .game-toolbar button { padding: 0.48rem 0.72rem; white-space: nowrap; }
+  .game-toolbar button:hover,
+  .touch-controls button:hover { border-color: #ec8b25; }
+
+  .canvas-wrap { aspect-ratio: 640 / 500; background: #05050a; }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    touch-action: manipulation;
+  }
+  canvas:focus-visible { box-shadow: inset 0 0 0 3px #ec8b25; }
+
+  .touch-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.8rem;
+    background: #15151b;
+  }
+  .touch-controls[hidden] { display: none; }
+  .touch-controls button {
+    min-width: 3.2rem;
+    min-height: 3rem;
+    padding: 0.5rem 0.9rem;
+    font-size: 1rem;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .touch-controls .fire { min-width: 5rem; color: #111; background: #ec8b25; border-color: #ec8b25; }
+
+  .game-status {
+    min-height: 2.2rem;
+    margin: 0;
+    padding: 0.55rem 1rem 0.75rem;
+    color: #aaa;
+    background: #15151b;
+    font: 0.72rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  .field-notes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
+  .field-notes h2 {
+    margin: 0 0 0.75rem;
+    color: var(--ink-strong);
+    font: 500 1.15rem/1.3 'Fraunces', serif;
+  }
+  .field-notes p { margin: 0 0 0.6rem; color: var(--muted); font-size: 0.9rem; }
+  .field-notes a { color: var(--accent); text-decoration: none; }
+  .field-notes a:hover { text-decoration: underline; }
+  kbd {
+    display: inline-block;
+    min-width: 1.7em;
+    padding: 0.04rem 0.32rem;
+    border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent);
+    border-radius: 4px;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--ink) 5%, transparent);
+    font: 0.78rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-align: center;
+  }
+
+  @media (max-width: 620px) {
+    .lamar-page { padding-inline: 0.75rem; }
+    .game-shell { border-radius: 12px; }
+    .game-toolbar { align-items: flex-start; }
+    .field-notes { grid-template-columns: 1fr; gap: 1.25rem; }
+    .stats { gap: 0.35rem 0.7rem; }
+  }
+
+  @media (pointer: fine) and (min-width: 760px) {
+    .touch-controls { padding-block: 0.55rem; }
+    .touch-controls button { min-height: 2.4rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .game-shell { box-shadow: none; }
+  }
+</style>

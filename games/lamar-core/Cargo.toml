@@ -1,0 +1,15 @@
+[package]
+name = "lamar-core"
+version = "0.1.0"
+edition = "2021"
+description = "WebAssembly game-state core for Lamar's Space Adventures"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"

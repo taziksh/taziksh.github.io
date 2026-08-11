@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:lamar": "./scripts/build-lamar.sh",
+    "test:lamar": "cargo test --manifest-path games/lamar-core/Cargo.toml",
     "preview": "astro preview",
     "prepare": "git config core.hooksPath .githooks"
   },

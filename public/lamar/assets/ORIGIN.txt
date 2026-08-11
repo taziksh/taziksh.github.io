@@ -1,0 +1,6 @@
+Original, byte-for-byte gameplay assets from:
+https://github.com/taziksh/lamar-game
+
+The browser restoration intentionally retains every file from the original
+images/ directory, including Console.bmp and the unused alternate
+deathScreen.png, plus the unmodified lamarBackgroundMusic.wav soundtrack.

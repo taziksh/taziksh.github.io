@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .astro/
+games/lamar-core/target/
 prototypes/
 .claude/
 .DS_Store
