@@ -10,6 +10,7 @@ const notes = defineCollection({
     cover: z.string().optional(),
     image: z.string().optional(),
     public: z.boolean().default(false),
+    icon: z.string().optional(),
   }),
 });
 

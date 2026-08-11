@@ -2,6 +2,7 @@
 title: The Cosmological Argument
 date: 2026-06-11
 public: true
+icon: "⁂"
 ---
 
 ![A view of the early universe](./the-cosmological-argument-assets/hero.png)

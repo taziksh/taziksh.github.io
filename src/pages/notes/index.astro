@@ -33,7 +33,17 @@ const notes = (
         {
           notes.map((note) => (
             <li>
-              <a href={`/notes/${note.id}`}>{formatNoteTitle(note.data.title)}</a>
+              <span class="entry">
+                {note.data.icon &&
+                  (note.data.icon.startsWith('/') ? (
+                    <img class="note-icon" src={note.data.icon} alt="" loading="lazy" />
+                  ) : (
+                    <span class="note-icon note-icon-glyph" aria-hidden="true">
+                      {note.data.icon}
+                    </span>
+                  ))}
+                <a href={`/notes/${note.id}`}>{formatNoteTitle(note.data.title)}</a>
+              </span>
               <time datetime={note.data.date.toISOString().slice(0, 10)}>
                 {note.data.date.toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -62,6 +72,26 @@ const notes = (
         align-items: baseline;
         gap: 1rem;
         padding: 0.5rem 0;
+      }
+      .entry {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        min-width: 0;
+      }
+      .note-icon {
+        width: 18px;
+        height: 18px;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+      .note-icon-glyph {
+        font-family: 'Fraunces', serif;
+        font-size: 1rem;
+        line-height: 18px;
+        text-align: center;
+        color: var(--muted);
+        border-radius: 0;
       }
       li a {
         font-family: 'Fraunces', serif;

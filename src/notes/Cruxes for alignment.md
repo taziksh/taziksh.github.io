@@ -2,6 +2,7 @@
 title: Cruxes for alignment
 date: 2026-08-08
 public: true
+icon: /notes-icons/shoggoth.png
 ---
 AI alignment is far from a solved problem. We need only look at [recent](https://www.youtube.com/watch?v=87DyyMV0kCY) [events](https://www.aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing) to see this. Before we can attempt to propose a solution, we must first get the basics straight: what does AI alignment even mean?
 

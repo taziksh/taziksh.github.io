@@ -2,6 +2,7 @@
 title: The greatest alphabet
 date: 2026-07-05
 public: true
+icon: "ㄱ"
 ---
 Hangul, the Korean alphabet, is the greatest writing system that humanity has invented.
 

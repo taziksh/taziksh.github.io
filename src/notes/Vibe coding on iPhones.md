@@ -2,6 +2,7 @@
 title: Vibe coding on iPhones
 date: 2026-06-06
 public: true
+icon: /notes-icons/touch-grass.png
 ---
 Have you ever wanted to code from your iPhone?
 

@@ -2,6 +2,7 @@
 title: How to make crispy tofu
 date: 2026-06-26
 public: true
+icon: /notes/tofu-emoji.png
 ---
 
 Crispy tofu <img src="/notes/tofu-emoji.png" alt="tofu" style="display:inline-block;width:1.18em;height:1.18em;max-width:none;margin:0 0.02em;object-fit:contain;vertical-align:-0.2em" /> is a simple dish, but the details matter if you want to get it right. Here's how you can make it at home.
