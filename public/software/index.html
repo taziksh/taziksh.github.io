@@ -4,31 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Software | Tazik</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/site.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js" defer></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; background: #141417; color-scheme: dark; }
-  #term { max-width: 700px; height: 100%; margin: 0 auto; padding: 56px 24px 24px; }
+  main {
+    max-width: 640px;
+    height: 100dvh;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #term {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
 </style>
 </head>
 <body>
+<main>
+<header>
+<a class="home" href="/" aria-label="home"><span class="signature"></span></a>
+<h1>Software</h1>
+</header>
 <div id="term"></div>
+</main>
 <script type="module">
 import { loadLM } from './lm.js';
 
+const tokens = getComputedStyle(document.documentElement);
+const token = (name) => tokens.getPropertyValue(name).trim();
 const term = new Terminal({
   cursorBlink: true,
   fontSize: 14,
+  lineHeight: 1.5,
   fontFamily: '"SF Mono", Menlo, monospace',
   theme: {
-    background: '#141417',
-    foreground: '#d6d6d6',
-    cursor: '#a18bf0',
-    selectionBackground: '#3a3a4a',
-    brightBlack: '#6a6a72',
+    background: token('--bg'),
+    foreground: token('--ink'),
+    cursor: token('--accent'),
+    selectionBackground: token('--muted'),
+    brightBlack: token('--muted'),
   },
 });
 const fit = new FitAddon.FitAddon();
@@ -36,7 +58,12 @@ term.loadAddon(fit);
 term.loadAddon(new WebLinksAddon.WebLinksAddon());
 term.open(document.getElementById('term'));
 fit.fit();
-addEventListener('resize', () => fit.fit());
+let fitQueued = false;
+addEventListener('resize', () => {
+  if (fitQueued) return;
+  fitQueued = true;
+  requestAnimationFrame(() => { fitQueued = false; fit.fit(); });
+});
 term.focus();
 
 const write = (s) => term.write(s.replace(/\n/g, '\r\n'));
@@ -51,6 +78,7 @@ const PROGRAMS = [{
 let mode = 'shell';
 let line = '';
 let busy = false;
+let interrupted = false;
 let lm = null;
 
 const prompt = () => { term.write(mode === 'shell' ? '$ ' : '> '); line = ''; };
@@ -88,41 +116,60 @@ function man(arg) {
 }
 
 async function startStories(program) {
-  mode = 'story';
   if (!lm) {
+    busy = true;
     term.write('loading · 39 MB');
     try {
       lm = await loadLM();
     } catch (e) {
       term.write('\r\x1b[Kfailed to load\r\n');
       console.error(e);
-      mode = 'shell';
       return;
+    } finally {
+      busy = false;
     }
     term.write('\r\x1b[K');
   }
+  mode = 'story';
 }
 
 async function generate() {
   busy = true;
+  interrupted = false;
   const p = line.trim() || 'Once upon a time';
   term.write('\r\n\r\n');
   write(p);
   let prev = '';
-  const res = await lm.generate(p, {
-    onToken: (id, genText) => {
-      write(genText.slice(prev.length));
-      prev = genText;
-    },
-  });
-  term.write('\r\n\r\n');
-  busy = false;
-  console.log('[term] done', res.tps.toFixed(1), 'tok/s');
-  document.body.dataset.done = '1';
+  try {
+    const res = await lm.generate(p, {
+      onToken: (id, genText) => {
+        if (interrupted) throw new Error('interrupted');
+        write(genText.slice(prev.length));
+        prev = genText;
+      },
+    });
+    if (res) console.log('[term] done', res.tps.toFixed(1), 'tok/s');
+  } catch (e) {
+    if (e.message !== 'interrupted') console.error(e);
+  } finally {
+    term.write('\r\n\r\n');
+    busy = false;
+    document.body.dataset.done = '1';
+  }
+}
+
+const history = [];
+let histIdx = -1;
+
+function setLine(next) {
+  term.write('\r\x1b[K' + (mode === 'shell' ? '$ ' : '> ') + next);
+  line = next;
 }
 
 async function onEnter() {
   const cmd = line.trim();
+  if (cmd) { history.push(cmd); }
+  histIdx = -1;
   if (mode === 'story') { await generate(); prompt(); return; }
   term.write('\r\n');
   if (cmd === '') { prompt(); return; }
@@ -137,21 +184,52 @@ async function onEnter() {
   prompt();
 }
 
+term.attachCustomKeyEventHandler((e) => {
+  if (e.type === 'keydown' && e.metaKey && e.key === 'Backspace') {
+    if (!busy) setLine('');
+    return false;
+  }
+  return true;
+});
+
 term.onData((d) => {
-  if (busy) return;
-  if (d === '\r') { onEnter(); return; }
   if (d === '\x03') {
+    if (busy) { interrupted = true; return; }
     term.write('^C\r\n');
     if (mode === 'story') mode = 'shell';
     prompt();
     return;
   }
+  if (busy) return;
+  if (d === '\r') { onEnter(); return; }
   if (d === '\x7f') {
     if (line.length) { line = line.slice(0, -1); term.write('\b \b'); }
     return;
   }
+  if (d === '\x1b[A' || d === '\x1b[B') {
+    if (!history.length) return;
+    if (d === '\x1b[A') {
+      histIdx = histIdx < 0 ? history.length - 1 : Math.max(0, histIdx - 1);
+      setLine(history[histIdx]);
+    } else if (histIdx >= 0) {
+      histIdx += 1;
+      if (histIdx >= history.length) { histIdx = -1; setLine(''); }
+      else setLine(history[histIdx]);
+    }
+    return;
+  }
+  if (d === '\x15') { setLine(''); return; }
+  if (d === '\x17' || d === '\x1b\x7f') {
+    setLine(line.replace(/\S+\s*$/, ''));
+    return;
+  }
+  if (d === '\x0c') {
+    term.clear();
+    setLine(line);
+    return;
+  }
   if (d === '\t') {
-    if (mode !== 'shell' || !line) return;
+    if (mode !== 'shell') return;
     const names = PROGRAMS.map((p) => p.name);
     const commands = PROGRAMS.flatMap((p) => [p.name, p.command]);
     let pool = [...commands, 'ls', 'man', 'clear', 'help'];
@@ -166,7 +244,8 @@ term.onData((d) => {
       term.write(lcp.slice(head.length));
       line = line.slice(0, line.length - head.length) + lcp;
     } else if (hits.length > 1) {
-      term.write('\r\n' + hits.join('  ') + '\r\n$ ' + line);
+      term.write('\r\n' + hits.join('  '));
+      setLine(line);
     }
     return;
   }
