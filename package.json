@@ -8,7 +8,7 @@
     "build:lamar": "./scripts/build-lamar.sh",
     "test:lamar": "cargo test --manifest-path games/lamar-core/Cargo.toml",
     "preview": "astro preview",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "if [ -d .git ] && [ -w .git/config ]; then git config core.hooksPath .githooks; fi"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",
