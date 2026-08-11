@@ -23,6 +23,7 @@ const dateHuman = date.toLocaleDateString('en-US', {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/site.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -45,35 +46,14 @@ const dateHuman = date.toLocaleDateString('en-US', {
 
     <style is:global>
       :root {
-        --bg: #ffffff;
-        --ink: #222222;
-        --ink-strong: #181818;
-        --muted: #8a8a8a;
-        --accent: #7b68ee;
         --code-bg: #f2f2f2;
         --code-ink: #3a3a3a;
       }
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #1e1e1e;
-          --ink: #dadada;
-          --ink-strong: #eaeaea;
-          --muted: #888888;
-      html {
-        background: var(--bg);
-        color-scheme: light dark;
-      }
-          --accent: #a18bf0;
           --code-bg: #2a2a2a;
           --code-ink: #cfcfcf;
         }
-      }
-      body {
-        background: var(--bg);
-        color: var(--ink);
-        margin: 0;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        line-height: 1.6;
       }
 
       .astro-code { background-color: var(--shiki-light-bg); }
@@ -99,15 +79,6 @@ const dateHuman = date.toLocaleDateString('en-US', {
       .back {
         display: inline-flex;
         color: var(--muted);
-      }
-      .back svg { width: 18px; height: 18px; }
-      .signature {
-        display: block;
-        width: 1.9rem;
-        height: 1.4rem;
-        background: currentColor;
-        -webkit-mask: url('/assets/signature-t.png') no-repeat center / contain;
-        mask: url('/assets/signature-t.png') no-repeat center / contain;
       }
       .back:hover { color: var(--accent); }
       header { margin: 2.5rem 0 2rem; }

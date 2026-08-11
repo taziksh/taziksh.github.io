@@ -1,0 +1,57 @@
+:root {
+  --bg: #ffffff;
+  --ink: #222222;
+  --ink-strong: #181818;
+  --muted: #8a8a8a;
+  --accent: #7b68ee;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1e;
+    --ink: #dadada;
+    --ink-strong: #eaeaea;
+    --muted: #888888;
+    --accent: #a18bf0;
+  }
+}
+
+* { box-sizing: border-box; }
+::selection { background: var(--accent); color: var(--bg); }
+
+html {
+  background: var(--bg);
+  color-scheme: light dark;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: 1.95rem;
+  margin: 2rem 0 2.5rem;
+  color: var(--ink-strong);
+}
+
+.home {
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-block;
+  padding: 0.6rem 0.8rem;
+  margin: -0.6rem -0.8rem;
+}
+.home:hover { color: var(--accent); }
+.signature {
+  display: block;
+  width: 1.9rem;
+  height: 1.4rem;
+  background: currentColor;
+  -webkit-mask: url('/assets/signature-t.png') no-repeat center / contain;
+  mask: url('/assets/signature-t.png') no-repeat center / contain;
+}
