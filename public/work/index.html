@@ -50,6 +50,14 @@
         margin: -0.6rem -0.8rem;
       }
       .home:hover { color: var(--accent); }
+      .signature {
+        display: block;
+        width: 1.9rem;
+        height: 1.4rem;
+        background: currentColor;
+        -webkit-mask: url('/assets/signature-t.png') no-repeat center / contain;
+        mask: url('/assets/signature-t.png') no-repeat center / contain;
+      }
       h1 {
         font-family: 'Fraunces', serif;
         font-optical-sizing: auto;
@@ -81,7 +89,7 @@
   </head>
   <body>
     <main>
-      <a class="home" href="/" aria-label="home">~/</a>
+      <a class="home" href="/" aria-label="home"><span class="signature"></span></a>
 
       <h1>things I'm doing</h1>
       <ul>

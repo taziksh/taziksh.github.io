@@ -45,6 +45,26 @@
         max-width: 640px;
         margin: 0 auto;
         padding: 3rem 1.5rem 5rem;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+      }
+      main > * { width: 100%; }
+      .home {
+        width: auto;
+        color: var(--muted);
+        display: inline-block;
+        padding: 0.6rem 0.8rem;
+        margin: -0.6rem -0.8rem;
+      }
+      .home:hover { color: var(--accent); }
+      .signature {
+        display: block;
+        width: 1.9rem;
+        height: 1.4rem;
+        background: currentColor;
+        -webkit-mask: url('/assets/signature-t.png') no-repeat center / contain;
+        mask: url('/assets/signature-t.png') no-repeat center / contain;
       }
       h1 {
         font-family: 'Fraunces', serif;
@@ -136,6 +156,7 @@
   </head>
   <body>
     <main>
+      <a class="home" href="/" aria-label="home"><span class="signature"></span></a>
       <h1>Tazik Shahjahan</h1>
 
       <div class="bio">
