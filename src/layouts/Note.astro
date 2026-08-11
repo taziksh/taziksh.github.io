@@ -1,6 +1,7 @@
 ---
 import 'katex/dist/katex.min.css';
 import { formatNoteTitle } from '../lib/notes';
+import Portals from '../components/Portals.astro';
 
 interface Props {
   title: string;
@@ -42,6 +43,7 @@ const dateHuman = date.toLocaleDateString('en-US', {
         </header>
         <slot />
       </article>
+      <Portals />
     </main>
 
     <style is:global>

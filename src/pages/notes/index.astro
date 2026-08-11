@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import Portals from '../../components/Portals.astro';
 import { formatNoteTitle, isBookReview } from '../../lib/notes';
 
 const notes = (
@@ -45,6 +46,7 @@ const notes = (
           ))
         }
       </ul>
+      <Portals />
     </main>
 
     <style>

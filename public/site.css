@@ -56,3 +56,21 @@ h1 {
   -webkit-mask: url('/assets/signature-t.png') no-repeat center / contain;
   mask: url('/assets/signature-t.png') no-repeat center / contain;
 }
+
+main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+main > * { width: 100%; }
+footer {
+  margin-top: auto;
+  padding-top: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.portals { display: flex; gap: 1.1rem; align-items: center; }
+.portals a { color: var(--muted); display: inline-flex; }
+.portals a:hover { color: var(--accent); }
+.portals svg { display: block; width: 16px; height: 16px; }

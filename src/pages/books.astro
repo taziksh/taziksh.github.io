@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import Portals from '../components/Portals.astro';
 import { isBookReview } from '../lib/notes';
 
 const FEED = 'https://www.goodreads.com/review/list_rss/69012250?shelf=read';
@@ -209,6 +210,7 @@ const goodreadsBooks = cache.books.filter(
           </details>
         ))
       }
+      <Portals />
     </main>
 
     <style>
