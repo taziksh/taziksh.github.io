@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Software | Tazik</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
-<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js" defer></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; background: #141417; }
+  html, body { height: 100%; background: #141417; color-scheme: dark; }
   #term { max-width: 700px; height: 100%; margin: 0 auto; padding: 56px 24px 24px; }
 </style>
 </head>
@@ -160,7 +159,15 @@ term.onData((d) => {
     if (line.startsWith('man ')) { pool = names; head = line.slice(4); }
     else head = line;
     const hits = pool.filter((c) => c.startsWith(head));
-    if (hits.length === 1) { term.write(hits[0].slice(head.length)); line = line.slice(0, line.length - head.length) + hits[0]; }
+    if (!hits.length) return;
+    let lcp = hits[0];
+    for (const h of hits) { while (!h.startsWith(lcp)) lcp = lcp.slice(0, -1); }
+    if (lcp.length > head.length) {
+      term.write(lcp.slice(head.length));
+      line = line.slice(0, line.length - head.length) + lcp;
+    } else if (hits.length > 1) {
+      term.write('\r\n' + hits.join('  ') + '\r\n$ ' + line);
+    }
     return;
   }
   if (d >= ' ') { line += d; term.write(d); }

@@ -59,7 +59,19 @@ function sample(logits, temp, topP) {
   return order[cut - 1];
 }
 
+function ensureOrt() {
+  if (window.ort) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js';
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
 export async function loadLM({ onProgress } = {}) {
+  await ensureOrt();
   const meta = await (await fetch('meta.json')).json();
   const tok = new Tokenizer(await (await fetch('tokenizer.json')).json());
   onProgress?.('tokenizer');
