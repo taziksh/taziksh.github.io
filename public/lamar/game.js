@@ -7,12 +7,7 @@ const CORE_DEAD = 3;
 const canvas = document.querySelector('#lamar-canvas');
 const context = canvas.getContext('2d', { alpha: false });
 const status = document.querySelector('#game-status');
-const healthValue = document.querySelector('#health-value');
-const boostValue = document.querySelector('#boost-value');
-const killsValue = document.querySelector('#kills-value');
-const difficultyValue = document.querySelector('#difficulty-value');
-const audioToggle = document.querySelector('#audio-toggle');
-const touchControls = document.querySelector('#touch-controls');
+const infoWindow = document.querySelector('#info-window');
 
 const assetNames = [
   'background.jpg',
@@ -38,14 +33,13 @@ let screen = 'loading';
 let lastFrameTime = performance.now();
 let selectedDifficulty = 1;
 let previousCoreState = CORE_PLAYING;
-let audioEnabled = true;
 let audioStarted = false;
 let pausedInputPending = false;
 
 const music = new Audio('/lamar/assets/lamarBackgroundMusic.wav');
 music.loop = true;
 music.preload = 'none';
-music.volume = 0.55;
+music.volume = 1;
 
 function loadImage(name) {
   return new Promise((resolve, reject) => {
@@ -83,7 +77,8 @@ async function initialize() {
       throw new Error('The faithful Lamar WebAssembly core is out of date');
     }
     screen = 'title';
-    status.textContent = 'Press any key, or choose PLAY.';
+    status.textContent = 'Press any key.';
+    ensureMusic();
     canvas.focus();
   } catch (error) {
     screen = 'error';
@@ -92,35 +87,13 @@ async function initialize() {
 }
 
 async function ensureMusic() {
-  if (!audioEnabled || audioStarted) return;
+  if (audioStarted) return;
   try {
     await music.play();
     audioStarted = true;
-    audioToggle.textContent = 'sound: on';
-    audioToggle.setAttribute('aria-pressed', 'true');
-    audioToggle.removeAttribute('title');
   } catch {
     audioStarted = false;
-    audioToggle.textContent = 'sound: tap to start';
-    audioToggle.title = 'Browser audio needs one more click to begin';
   }
-}
-
-function toggleMusic() {
-  if (audioEnabled && !audioStarted) {
-    ensureMusic();
-    return;
-  }
-
-  audioEnabled = !audioEnabled;
-  if (audioEnabled) ensureMusic();
-  else {
-    music.pause();
-    audioStarted = false;
-  }
-  audioToggle.textContent = `sound: ${audioEnabled ? 'on' : 'off'}`;
-  audioToggle.setAttribute('aria-pressed', String(audioEnabled));
-  audioToggle.removeAttribute('title');
 }
 
 function showDifficulty() {
@@ -139,7 +112,8 @@ function confirmDifficulty(difficulty) {
 
 function showInfo() {
   screen = 'info';
-  status.textContent = 'Press any key to close the original info screen and launch.';
+  infoWindow.hidden = false;
+  status.textContent = 'Info window opened. Press any key to continue.';
 }
 
 function startGame() {
@@ -148,8 +122,7 @@ function startGame() {
   previousCoreState = CORE_PLAYING;
   pausedInputPending = false;
   screen = 'playing';
-  status.textContent = 'Legacy controls: W/S move 15 px, Space fires, P pauses.';
-  touchControls.hidden = false;
+  status.textContent = 'Use W and S to move, Spacebar to fire, and P to pause.';
   ensureMusic();
   canvas.focus();
 }
@@ -158,18 +131,12 @@ function quitGame() {
   screen = 'quit';
   music.pause();
   audioStarted = false;
-  touchControls.hidden = true;
-  status.textContent = 'Lamar has returned to space. Press Enter to play again.';
-}
-
-function returnToTitle() {
-  screen = 'title';
-  touchControls.hidden = true;
-  status.textContent = 'Press any key, or choose PLAY.';
+  infoWindow.hidden = true;
+  status.textContent = 'Game closed.';
 }
 
 function isCharacterInput(event) {
-  return event.key.length === 1 || ['Enter', 'ArrowUp', 'ArrowDown'].includes(event.code);
+  return event.key.length === 1 || event.key === 'Enter';
 }
 
 function chooseDifficultyFromKey(code) {
@@ -182,11 +149,10 @@ function chooseDifficultyFromKey(code) {
 
 function processLegacyGameplayKey(event) {
   if (core.lamar_state() === CORE_DEAD) {
-    if (event.code === 'KeyR') {
+    if (event.key === 'r') {
       core.lamar_restart();
       previousCoreState = CORE_PLAYING;
-      status.textContent = 'Legacy retry: health is 200; kills and enemy state are retained.';
-    } else if (event.code === 'KeyQ') quitGame();
+    } else if (event.key === 'q') quitGame();
     if (isCharacterInput(event)) event.preventDefault();
     return;
   }
@@ -203,13 +169,13 @@ function processLegacyGameplayKey(event) {
     }
   }
 
-  if (event.code === 'KeyW' || event.code === 'ArrowUp') {
+  if (event.key === 'w' || event.key === 'W') {
     core.lamar_nudge_player(-1);
-  } else if (event.code === 'KeyS' || event.code === 'ArrowDown') {
+  } else if (event.key === 's' || event.key === 'S') {
     core.lamar_nudge_player(1);
   } else if (event.code === 'Space') {
     core.lamar_fire();
-  } else if (event.code === 'KeyP') {
+  } else if (event.key === 'p' || event.key === 'P') {
     core.lamar_toggle_pause();
     pausedInputPending = true;
   }
@@ -219,7 +185,7 @@ function processLegacyGameplayKey(event) {
   status.textContent =
     state === CORE_PAUSED
       ? 'GAME PAUSED — press any non-P key to continue.'
-      : 'Legacy controls: W/S move 15 px, Space fires, P pauses.';
+      : 'Use W and S to move, Spacebar to fire, and P to pause.';
   event.preventDefault();
 }
 
@@ -241,8 +207,8 @@ function onKeyDown(event) {
 
   if (screen === 'post-difficulty') {
     if (!isCharacterInput(event)) return;
-    if (event.code === 'KeyI') showInfo();
-    else if (event.code === 'KeyQ') quitGame();
+    if (event.key === 'i') showInfo();
+    else if (event.key === 'q') quitGame();
     else startGame();
     event.preventDefault();
     return;
@@ -256,44 +222,9 @@ function onKeyDown(event) {
     return;
   }
 
-  if (screen === 'quit') {
-    if (event.code === 'Enter' || event.code === 'Space') returnToTitle();
-    return;
-  }
+  if (screen === 'quit') return;
 
   if (screen === 'playing') processLegacyGameplayKey(event);
-}
-
-function canvasPoint(event) {
-  const bounds = canvas.getBoundingClientRect();
-  return {
-    x: ((event.clientX - bounds.left) / bounds.width) * WIDTH,
-    y: ((event.clientY - bounds.top) / bounds.height) * HEIGHT,
-  };
-}
-
-function onCanvasClick(event) {
-  canvas.focus();
-  const point = canvasPoint(event);
-
-  if (screen === 'title') {
-    if (point.y >= 230 && point.y <= 350 && point.x < WIDTH / 2) showDifficulty();
-    else if (point.y >= 230 && point.y <= 350) quitGame();
-  } else if (screen === 'difficulty') {
-    if (point.x < 225) confirmDifficulty(1);
-    else if (point.x < 425) confirmDifficulty(2);
-    else confirmDifficulty(3);
-  } else if (screen === 'post-difficulty' || screen === 'info') {
-    startGame();
-  } else if (screen === 'quit') {
-    returnToTitle();
-  } else if (screen === 'playing' && core.lamar_state() === CORE_DEAD) {
-    if (point.x < WIDTH / 2) {
-      core.lamar_restart();
-      previousCoreState = CORE_PLAYING;
-      status.textContent = 'Legacy retry: health is 200; kills and enemy state are retained.';
-    } else quitGame();
-  }
 }
 
 function drawTitle() {
@@ -309,22 +240,6 @@ function drawDifficulty() {
   context.drawImage(assets['diffEasy.png'], 60, 300, 160, 53);
   context.drawImage(assets['diffMeh.png'], 250, 360, 160, 53);
   context.drawImage(assets['diffHard.png'], 440, 300, 160, 53);
-}
-
-function drawInfo() {
-  drawDifficulty();
-  context.fillStyle = 'rgba(0, 0, 0, 0.72)';
-  context.fillRect(145, 45, 350, 405);
-  context.fillStyle = '#fff';
-  context.font = 'bold 18px Arial, sans-serif';
-  context.fillText("LAMAR'S SPACE ADVENTURES", 180, 100);
-  context.font = '17px Arial, sans-serif';
-  context.fillText('Use W to move up', 200, 165);
-  context.fillText('Use S to move down', 200, 215);
-  context.fillText('Use Spacebar to fire', 200, 265);
-  context.fillText('Use P to pause game', 200, 315);
-  context.font = '14px Arial, sans-serif';
-  context.fillText('press any key to continue', 225, 395);
 }
 
 function drawLaserTrail() {
@@ -379,48 +294,11 @@ function drawDeath() {
   context.fillStyle = '#1737e8';
   context.font = 'bold 30px Arial Black, Arial, sans-serif';
   context.fillText(`Total kills: ${core.lamar_kills()}`, 100, 50);
-  context.fillStyle = '#111';
-  context.font = 'bold 20px Arial Black, Arial, sans-serif';
-  context.fillText('R / tap left: retry', 80, 455);
-  context.fillText('Q / tap right: quit', 365, 455);
 }
 
 function drawQuit() {
-  context.fillStyle = '#05050a';
+  context.fillStyle = '#000';
   context.fillRect(0, 0, WIDTH, HEIGHT);
-  context.drawImage(assets['spaceLamar.png'], 155, 35, 330, 330);
-  context.fillStyle = '#ec8b25';
-  context.font = 'bold 24px Arial Black, Arial, sans-serif';
-  context.textAlign = 'center';
-  context.fillText('LAMAR WILL RETURN', WIDTH / 2, 415);
-  context.font = '16px Arial, sans-serif';
-  context.fillStyle = '#fff';
-  context.fillText('press Enter or tap to play again', WIDTH / 2, 452);
-  context.textAlign = 'start';
-}
-
-function drawMessage(message) {
-  context.fillStyle = '#05050a';
-  context.fillRect(0, 0, WIDTH, HEIGHT);
-  context.fillStyle = '#fff';
-  context.font = '20px system-ui, sans-serif';
-  context.textAlign = 'center';
-  context.fillText(message, WIDTH / 2, HEIGHT / 2);
-  context.textAlign = 'start';
-}
-
-function updateHud() {
-  if (!core || screen !== 'playing') {
-    healthValue.textContent = '—';
-    boostValue.textContent = '—';
-    killsValue.textContent = '—';
-    difficultyValue.textContent = '—';
-    return;
-  }
-  healthValue.textContent = `${core.lamar_health()}/${core.lamar_max_health()}`;
-  boostValue.textContent = `${core.lamar_boost()}/25`;
-  killsValue.textContent = String(core.lamar_kills());
-  difficultyValue.textContent = ['Easy', 'Meh', 'Hard'][selectedDifficulty - 1];
 }
 
 function frame(now) {
@@ -434,60 +312,24 @@ function frame(now) {
   if (screen === 'playing') {
     const currentCoreState = core.lamar_state();
     if (currentCoreState !== previousCoreState && currentCoreState === CORE_DEAD) {
-      status.textContent =
-        'Lamar crashed. Press R or tap left to retry; Q or tap right to quit.';
+      status.textContent = 'Lamar crashed. Press lowercase R to retry or lowercase Q to quit.';
     }
     previousCoreState = currentCoreState;
   }
 
   context.imageSmoothingEnabled = true;
-  if (screen === 'loading') drawMessage('Loading Lamar…');
-  else if (screen === 'error') drawMessage('Lamar could not launch');
+  if (screen === 'loading' || screen === 'error') drawQuit();
   else if (screen === 'title') drawTitle();
   else if (screen === 'difficulty' || screen === 'post-difficulty') drawDifficulty();
-  else if (screen === 'info') drawInfo();
+  else if (screen === 'info') drawDifficulty();
   else if (screen === 'playing') drawGame();
   else if (screen === 'quit') drawQuit();
-  updateHud();
 
   if (screen === 'playing' && core.lamar_laser_visible()) core.lamar_after_render();
   requestAnimationFrame(frame);
 }
-
-function triggerTouchAction(action) {
-  if (screen !== 'playing' || core.lamar_state() === CORE_DEAD) return;
-  if (core.lamar_state() === CORE_PAUSED) {
-    core.lamar_toggle_pause();
-    if (pausedInputPending) {
-      core.lamar_register_input();
-      pausedInputPending = false;
-    }
-  }
-
-  if (action === 'up') core.lamar_nudge_player(-1);
-  else if (action === 'down') core.lamar_nudge_player(1);
-  else if (action === 'fire') core.lamar_fire();
-  else if (action === 'pause') {
-    core.lamar_toggle_pause();
-    pausedInputPending = true;
-  }
-
-  if (core.lamar_state() === CORE_PLAYING) core.lamar_register_input();
-  status.textContent =
-    core.lamar_state() === CORE_PAUSED
-      ? 'GAME PAUSED — press any non-P key to continue.'
-      : 'Legacy controls: W/S move 15 px, Space fires, P pauses.';
-}
-
-audioToggle.addEventListener('click', toggleMusic);
-canvas.addEventListener('click', onCanvasClick);
+canvas.addEventListener('pointerdown', () => canvas.focus());
 window.addEventListener('keydown', onKeyDown, { passive: false });
-document.querySelectorAll('[data-action]').forEach((button) => {
-  button.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-    triggerTouchAction(button.dataset.action);
-  });
-});
 
 requestAnimationFrame(frame);
 initialize();
