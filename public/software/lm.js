@@ -72,11 +72,11 @@ function ensureOrt() {
 
 export async function loadLM({ onProgress } = {}) {
   await ensureOrt();
-  const meta = await (await fetch('meta.json')).json();
-  const tok = new Tokenizer(await (await fetch('tokenizer.json')).json());
+  const meta = await (await fetch(new URL('meta.json', import.meta.url))).json();
+  const tok = new Tokenizer(await (await fetch(new URL('tokenizer.json', import.meta.url))).json());
   onProgress?.('tokenizer');
   const ep = 'wasm';
-  const session = await ort.InferenceSession.create('model.int8.onnx', { executionProviders: [ep] });
+  const session = await ort.InferenceSession.create(new URL('model.int8.onnx', import.meta.url).href, { executionProviders: [ep] });
   onProgress?.('model');
   console.log('[lm] ready', ep);
 
