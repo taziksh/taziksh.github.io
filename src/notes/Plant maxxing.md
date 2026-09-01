@@ -132,4 +132,4 @@ Animals eat plants, and we eat animals. Because only ~10% of energy is transmitt
 ![[Pasted image 20260831182750.png]]
 <small class="image-caption">Source: <a href="https://www.khanacademy.org/science/biology/ecology/intro-to-ecosystems/a/food-chains-food-webs">Khan Academy</a></small>
 
-Idk man. The truth is I'm used to eating meat, and I like it. But if my goal is to minimize the suffering I cause in this lifetime, it seems like I should eat more plants. I'm taking baby steps, and have stopped eating meat on Mondays (#MeatlessMondays).
+I think it's fairly clear that the evidence in support of eating plants is stronger than that for eating animals, if our goal is to minimize suffering.
