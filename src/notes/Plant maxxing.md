@@ -20,7 +20,7 @@ In deciding what to eat, the consequentialist perspective is to reduce suffering
 
 
 ![[Pasted image 20260830110152.png]]
-Fig: [source](https://www.discoverwildlife.com/animal-facts/tree-of-life-evolution)
+<small class="image-caption">Source: <a href="https://www.discoverwildlife.com/animal-facts/tree-of-life-evolution">Discover Wildlife</a></small>
 
 Let's start with my 3rd favorite species, *Homo sapiens*.
 
@@ -28,7 +28,7 @@ Q: How do you know another human is experiencing pain?
 A: They'll tell you about it
 
 ![[Pasted image 20260830110335.png]]
-Fig: [source](https://www.wikihow.com/Tell-the-Difference-Between-a-Pulled-Muscle-or-Lung-Pain)
+<small class="image-caption">Source: <a href="https://www.wikihow.com/Tell-the-Difference-Between-a-Pulled-Muscle-or-Lung-Pain">wikiHow</a></small>
 
 There are plenty of ways to tell if another human is going through it!
 - Visual signs e.g. winces, grimaces
@@ -41,7 +41,7 @@ But you or I would know that is the case, because we have the same experiences, 
 Cool! Can we apply this to other organisms?
 
 ![[Pasted image 20260830111202.png|303]]
-Fig: squirrel monkey
+<small class="image-caption">Squirrel monkey</small>
 
 It's apparent that the squirrel monkey above is smiling (probably?).
 
@@ -70,7 +70,7 @@ Quick interlude on the parts of the brain!
 When you picture the brain, you are probably thinking of the pink squishy outer part, aka the cerebral cortex.
 
 ![[Pasted image 20260830121152.png]]
-Fig: [source](https://pressbooks.cuny.edu/intropsychhurson/chapter/3-2-our-brains-control-our-thoughts-feelings-and-behavior/)
+<small class="image-caption">Source: <a href="https://pressbooks.cuny.edu/intropsychhurson/chapter/3-2-our-brains-control-our-thoughts-feelings-and-behavior/">Introduction to Psychology</a></small>
 
 The brain has other parts too, like the cerebellum.
 
@@ -104,7 +104,7 @@ Naturally, I had to ask: how the heck do we count neurons?
 It looks a lot like [making soup](https://pmc.ncbi.nlm.nih.gov/articles/PMC6725175/). Colorful soup, to be exact. First, we add [DAPI](https://en.wikipedia.org/wiki/DAPI), a fluorescent stain that binds to all cells. Then we add [NeuN](https://en.wikipedia.org/wiki/NeuN), a protein that binds only to neurons. An isotropic fractionator dissolves the brain in solution. We can count the NeuN colored cells to determine the number of neurons. There is ongoing research into the [reliability of the method](https://www.sciencedirect.com/science/article/abs/pii/S0165027019302493).
 
 ![[Pasted image 20260830123610.png]]
-Fig: NeuN [source](https://en.wikipedia.org/wiki/NeuN)
+<small class="image-caption">NeuN · Source: <a href="https://en.wikipedia.org/wiki/NeuN">Wikipedia</a></small>
 
 A better method would be to preserve the whole brain, instead of liquefying it. This is what whole-brain connectomics is about. [We *just* mapped a whole fruit fly connectome](https://hms.harvard.edu/news/researchers-publish-first-complete-connectome-fruit-fly-brain-spinal-cord) (i.e. the neurons and synapses and everything else). 
 
@@ -123,14 +123,13 @@ The question of whether plants have capacity for suffering is, with current scie
 
 
 ![[Pasted image 20260830120940.png]]
-Fig: maybe we are the zombies [source](https://www.theverge.com/games/803795/plants-vs-zombies-replanted-remaster-switch-pc-ps5-xbox)
+<small class="image-caption">Maybe we are the zombies · Source: <a href="https://www.theverge.com/games/803795/plants-vs-zombies-replanted-remaster-switch-pc-ps5-xbox">The Verge</a></small>
 
 But even *if* we wanted to privilege plants, it would still make sense to eat more plants!
 
 Animals eat plants, and we eat animals. Because only ~10% of energy is transmitted, *more plants* end up being consumed in a carnivorous diet!
 
 ![[Pasted image 20260831182750.png]]
-Fig: [source](https://www.khanacademy.org/science/biology/ecology/intro-to-ecosystems/a/food-chains-food-webs)
+<small class="image-caption">Source: <a href="https://www.khanacademy.org/science/biology/ecology/intro-to-ecosystems/a/food-chains-food-webs">Khan Academy</a></small>
 
 Idk man. The truth is I'm used to eating meat, and I like it. But if my goal is to minimize the suffering I cause in this lifetime, it seems like I should eat more plants. I'm taking baby steps, and have stopped eating meat on Mondays (#MeatlessMondays).
-
