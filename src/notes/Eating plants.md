@@ -1,30 +1,36 @@
 ---
-title: Plant maxxing
+title: Eating plants
 date: 2026-08-31
 public: true
 ---
+**tl;dr**
+* The sensory pleasure of eating meat does not justify the horrors of factory farming, which produces most meat
+* We do not currently have the technology to measure organisms' capacity for suffering. Some will say it's better to eat one "smarter" organism (🐮) rather than hundreds of shrimp (🦐); others might argue the opposite
+* If you believe plants are more worth privileging than animals and thus object to eating plants, you should still eat plants, because otherwise the animals you're eating will be eating more plants (trophic efficiency aka 10% rule)
 
-I'm pretty sure eating plants is less bad than eating animals.
+---
+**essay**
+
+If your goal is to reduce suffering, you should eat more plants and fewer animals.
 
 I got into a big argument with a close member of my family about this.
 
-I think we can talk about this without using the c word at all. Consciousness is usually a tarpit that has claimed the lives of many an amateur armchair philosopher. 
+Now I must've not been well slept, because I said:
 
-But I must've not been well slept, because I accidentally said. I said:
+"We should eat fewer animals. Cows are probably more conscious than chickens, and chickens more conscious than carrots."
 
-"We should probably eat fewer animals. Cows are probably more conscious than chickens, and chickens more conscious than carrots."
+I think this is a bad argument. Consciousness is a *subjective* experience, and we have no way to empirically validate it. I think we can talk about this without using the c word at all. Consciousness is a tarpit that has claimed the lives of many an amateur armchair philosopher. 
 
-I think this is a bad argument. Consciousness is a *subjective* experience, and we have no way to empirically validate it. It also is not even what we care about here.
-
-In deciding what to eat, the consequentialist perspective is to reduce suffering, or pain.  But how do we know if an organism experiences "pain"?
+Let's say our goal is to reduce suffering in our consumption choices. How do we know if an organism experiences "pain"?
 
 
 ![[Pasted image 20260830110152.png]]
 <small class="image-caption">Source: <a href="https://www.discoverwildlife.com/animal-facts/tree-of-life-evolution">Discover Wildlife</a></small>
 
-Let's start with my 3rd favorite species, *Homo sapiens*.
+Let's start with humans.
 
 Q: How do you know another human is experiencing pain?
+
 A: They'll tell you about it
 
 ![[Pasted image 20260830110335.png]]
@@ -53,17 +59,14 @@ It's not clear that the octopus experiences any less pain than the monkey, but i
 
 [Octopuses are really smart](https://ocean.si.edu/ocean-life/invertebrates/why-octopus-brain-so-extraordinary). They can unscrew jars, build houses from coconut shells, and recognize humans. Again, they're [smart](https://www.nhm.ac.uk/discover/octopuses-keep-surprising-us-here-are-eight-examples-how.html).
 
-Is there any way to estimate an organism's capacity for pain, that doesn't rely on anthropocentric biases?
+Is there any way to estimate an organism's capacity for pain that doesn't rely on anthropocentric biases?
 
 Maybe we can consider how smart the organism is. Intelligence isn't the same as the ability to experience pain, but all models are wrong, and this one may be somewhat useful. We have no direct way of measuring intelligence, but maybe we can plot some proxy number here, like the raw neuron count of an animal.
 
-
-By this metric, an octopus is as smart as dogs, at 500 million neurons.
-
-Here are a few more animals:
+Here are neuron counts for different animals:
 ![[Pasted image 20260830113539.png]]
 
-At a glance, we can conclude that elephants should own the earth. 
+At a glance, we can conclude that elephants should own the Earth. 
 
 Quick interlude on the parts of the brain!
 
@@ -80,16 +83,17 @@ Are all parts of the brain equally relevant for cognition? At least for humans, 
 
 Most of our [understanding of the human brain comes from studies of patients with brain damage](https://pmc.ncbi.nlm.nih.gov/articles/PMC6712987/). This is similar to (and the precedent for) "ablations" in machine learning research.
 
-So we can use these case studies to estimate the importance of different parts of the brain. While both the cerebral cortex and cerebellum are quite important, damage to the cerebral cortex impacts *cognition*: planning, memory, vision, whilst the cerebellum is largely implicated in motor coordination. 
+So we can use these case studies to estimate the importance of different parts of the brain. While both the cerebral cortex and cerebellum are quite important, damage to the cerebral cortex impacts *cognition* (planning, memory, vision), whilst the cerebellum is largely implicated in motor coordination. 
 
 I find it helpful to also consider the limit cases. What happens when there is a complete absence of either of these regions?
 
-[Individuals born with almost no cerebellum](https://academic.oup.com/brain/article/133/3/652/277518) can sort of function in society, although with substantial cognitive problems (gait, speech, dexterity, learning). But those [without a cerebral cortex](https://www.ncbi.nlm.nih.gov/books/NBK558991/) are profoundly disabled, and usually die before birth, or within their first year of life.
+[Individuals born with almost no cerebellum](https://academic.oup.com/brain/article/133/3/652/277518) can sort of function in society, although with substantial motor and cognitive problems (gait, speech, dexterity, learning). But those [without a cerebral cortex](https://www.ncbi.nlm.nih.gov/books/NBK558991/) are profoundly disabled, and usually die before birth, or within their first year of life.
 
 This suggests that maybe cortical neuron count is a better proxy for intelligence.
 
 ![[Pasted image 20260830115558.png]]
-Wait a second. Is this a massive psy op to put humans back at the top? I find the lesion studies to be fairly strong evidence for the cerebral cortical count as a more reliable proxy, but in general, it is good to be skeptical when reading results in neuroscience. 
+
+Wait a second. Is this a massive psyop to put humans back at the top? I find the lesion studies to be fairly strong evidence for cortical neuron count as a more reliable proxy, but in general, it is good to be skeptical when reading results in neuroscience. 
 
 Octopuses don't have a cerebral cortex. Their [brains evolved very differently from ours](https://www.nature.com/articles/d41586-026-01302-4)!
 
@@ -101,22 +105,22 @@ Naturally, I had to ask: how the heck do we count neurons?
 
 
 
-It looks a lot like [making soup](https://pmc.ncbi.nlm.nih.gov/articles/PMC6725175/). Colorful soup, to be exact. First, we add [DAPI](https://en.wikipedia.org/wiki/DAPI), a fluorescent stain that binds to all cells. Then we add [NeuN](https://en.wikipedia.org/wiki/NeuN), a protein that binds only to neurons. An isotropic fractionator dissolves the brain in solution. We can count the NeuN colored cells to determine the number of neurons. There is ongoing research into the [reliability of the method](https://www.sciencedirect.com/science/article/abs/pii/S0165027019302493).
+It looks a lot like [making soup](https://pmc.ncbi.nlm.nih.gov/articles/PMC6725175/). Colorful soup, to be exact. First, an isotropic fractionator dissolves the brain in solution. Then we add [DAPI](https://en.wikipedia.org/wiki/DAPI), a fluorescent stain that binds to all cells, and an antibody that stains [NeuN](https://en.wikipedia.org/wiki/NeuN), a protein found only in neurons. We can count the NeuN-stained cells to determine the number of neurons. There is ongoing research into the [reliability of the method](https://www.sciencedirect.com/science/article/abs/pii/S0165027019302493).
 
 ![[Pasted image 20260830123610.png]]
 <small class="image-caption">NeuN · Source: <a href="https://en.wikipedia.org/wiki/NeuN">Wikipedia</a></small>
 
 A better method would be to preserve the whole brain, instead of liquefying it. This is what whole-brain connectomics is about. [We *just* mapped a whole fruit fly connectome](https://hms.harvard.edu/news/researchers-publish-first-complete-connectome-fruit-fly-brain-spinal-cord) (i.e. the neurons and synapses and everything else). 
 
-Speaking of sources of error, it is worth noting that some of these numbers come from *single* organism samples! Yes, we have done this procedure for exactly one elephant. (The error bars are left as an exercise for the reader)
+Speaking of sources of error, it is worth noting that some of these numbers come from *single* organism samples! Yes, we have done this procedure for exactly one elephant. (The error bars are left as an exercise for the reader.)
 
 Even if we get to perfect measurement and emulation of brains, we might still not be considering the right metrics. Our notion of intelligence is still highly biased by anthropocentricity.
 
-And this method is hard to extend to organisms without a central nervous system -- insects and plants included.
+And this method is hard to extend to organisms without a nervous system, like plants.
 
 Is there any reason to believe that plants feel pain?
 
-- Plants use [long-distance ion channels](https://www.annualreviews.org/content/journals/10.1146/annurev-arplant-070225-024248) (Ca2+) to transmit messages. If a leaf is being bitten, it can [alert](https://www.science.org/doi/10.1126/science.aat7744) other leaves of this. Some plants, such as [*Mimosa pudica*](https://www.nature.com/articles/s41467-022-34106-x), are capable of moving in response to stimuli.
+- Plants use [long-distance calcium (Ca²⁺) signals](https://www.annualreviews.org/content/journals/10.1146/annurev-arplant-070225-024248) to transmit messages. If a leaf is being bitten, it can [alert](https://www.science.org/doi/10.1126/science.aat7744) other leaves of this. Some plants, such as [*Mimosa pudica*](https://www.nature.com/articles/s41467-022-34106-x), are capable of moving in response to stimuli.
 - [Plants make sounds](https://www.nature.com/articles/d41586-023-00890-9) when they haven't been watered. They're at a frequency that the human ear cannot hear. 
 
 The question of whether plants have capacity for suffering is, with current science and technology, an unfalsifiable one. It may seem epistemically humble to be agnostic when it comes to our diet and non-preferentially choose which organisms we consume. It's a dog-eat-dog world, so let's all be omnivores. 
@@ -127,9 +131,10 @@ The question of whether plants have capacity for suffering is, with current scie
 
 But even *if* we wanted to privilege plants, it would still make sense to eat more plants!
 
-Animals eat plants, and we eat animals. Because only ~10% of energy is transmitted, *more plants* end up being consumed in a carnivorous diet!
+Animals eat plants, and we eat animals. Because only ~10% of energy is passed up each level of the food chain, *more plants* end up being consumed in a carnivorous diet!
 
 ![[Pasted image 20260831182750.png]]
 <small class="image-caption">Source: <a href="https://www.khanacademy.org/science/biology/ecology/intro-to-ecosystems/a/food-chains-food-webs">Khan Academy</a></small>
 
 I think it's fairly clear that the evidence in support of eating plants is stronger than that for eating animals, if our goal is to minimize suffering.
+
