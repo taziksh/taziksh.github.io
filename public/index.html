@@ -18,17 +18,17 @@
         margin: 0 auto;
         padding: 3rem 1.5rem 5rem;
       }
-      .home { width: auto; }
+      .home { width: auto; align-self: flex-start; }
       h1 {
         font-size: 2.1rem;
         margin: 2.5rem 0 1.5rem;
       }
       .bio p { margin: 0 0 1rem; }
+      .bio p:nth-child(2) { margin-bottom: 1.75rem; }
       .placeholder { color: var(--muted); }
       .bio a {
         color: var(--accent);
         text-decoration: none;
-        white-space: nowrap;
         padding-bottom: 2px;
       }
       .bio a:hover {
@@ -57,12 +57,22 @@
         vertical-align: -2px;
         margin-right: 3px;
       }
-      .site-nav {
+      .site-nav { margin-top: 1.75rem; }
+      .site-nav ul {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.6rem;
-        margin-top: 2.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.25rem 1.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .site-nav li { display: flex; }
+      @media (max-width: 480px) {
+        .site-nav ul {
+          display: grid;
+          grid-template-columns: repeat(2, max-content);
+        }
       }
       .site-nav a {
         color: var(--accent);
@@ -71,7 +81,8 @@
         gap: 0.55rem;
         text-decoration: none;
         font-size: 0.95rem;
-        padding-bottom: 2px;
+        padding: 0.5rem 0;
+        white-space: nowrap;
       }
       .site-nav a:hover {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='4' viewBox='0 0 12 4'%3E%3Cpath d='M0 2 Q3 0 6 2 T12 2' fill='none' stroke='%23a18bf0' stroke-width='1'/%3E%3C/svg%3E");
@@ -84,12 +95,240 @@
         .site-nav a:hover { animation: none; }
       }
       .site-nav svg { display: block; width: 16px; height: 16px; }
+      a:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+        border-radius: 2px;
+      }
       footer a {
         color: var(--muted);
         text-decoration: none;
         font-size: 0.85rem;
       }
       footer a:hover { color: var(--accent); }
+      .home { position: relative; }
+      .signature,
+      .site-nav svg,
+      .portals svg {
+        transition: transform 320ms cubic-bezier(0.2, 0.9, 0.3, 1.5);
+        transform-origin: center;
+      }
+      .home:is(:hover, :focus-visible) .signature {
+        transform: translate(var(--signature-x, 0px), var(--signature-y, 0px))
+          rotate(var(--signature-turn, -4deg)) scale(1.04);
+      }
+      .site-nav a:is(:hover, :focus-visible) svg {
+        transform: translate(var(--icon-x, 0px), -3px)
+          rotate(var(--icon-turn, -8deg)) scale(1.12);
+      }
+      .portals a:is(:hover, :focus-visible) svg {
+        transform: translate(var(--icon-x, 0px), -2px)
+          rotate(var(--icon-turn, -4deg)) scale(1.05);
+      }
+      .pixel-spark {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: var(--accent);
+        pointer-events: none;
+        animation: pixel-drift 650ms steps(7, end) both;
+      }
+      .pixel-spark:nth-of-type(even) { width: 2px; height: 2px; }
+      @keyframes pixel-drift {
+        0% { opacity: 0; transform: translate(0, 0) scale(0); }
+        20% { opacity: 0.8; }
+        100% {
+          opacity: 0;
+          transform: translate(var(--spark-x), var(--spark-y)) scale(0.5);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .signature, .site-nav svg, .portals svg { transition: none; }
+        .home:is(:hover, :focus-visible) .signature,
+        .site-nav a:is(:hover, :focus-visible) svg,
+        .portals a:is(:hover, :focus-visible) svg { transform: none; }
+        .pixel-spark { display: none; animation: none; }
+      }
+
+      .link-preview {
+        position: fixed;
+        z-index: 20;
+        width: min(350px, calc(100vw - 32px));
+        margin: 0;
+        padding: 6px;
+        border: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--ink);
+        box-shadow: 0 12px 40px #0002, 0 2px 6px #0001;
+        animation: preview-arrive 180ms ease-out;
+      }
+      .link-preview[hidden] { display: none; }
+      .preview-media {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1.6;
+        object-fit: cover;
+        object-position: top;
+        border-radius: 5px;
+        background: #f3ece5;
+      }
+      #spar-preview .preview-media { height: auto; aspect-ratio: 1280 / 610; }
+      .preview-caption {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 7px 5px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .preview-caption span { color: var(--muted); }
+      @keyframes preview-arrive {
+        from { opacity: 0; transform: translateY(5px) rotate(-1deg); }
+        to { opacity: 1; transform: none; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .link-preview { animation: none; }
+      }
+
+      .womp-link { white-space: nowrap; }
+
+      .womp-preview { width: 32px; height: 32px; padding: 0; animation: none; }
+      .dino-credit-toggle {
+        display: block; width: 100%; height: 100%; padding: 0; margin: 0;
+        border: 0; background: transparent; color: inherit; cursor: help;
+      }
+      .dino-credit-toggle:focus-visible { outline: 1px dotted var(--accent); outline-offset: 3px; border-radius: 3px; }
+      .dino-attribution {
+        display: flex; align-items: center; gap: 8px;
+        position: absolute; left: calc(100% + 8px); top: 0;
+        width: max-content; padding: 3px 6px; border-radius: 4px; white-space: nowrap;
+        background: var(--bg); color: var(--ink); text-align: left;
+        font: 11px/1.3 'Inter', system-ui, sans-serif;
+        box-shadow: 0 2px 12px #0001;
+      }
+      .dino-attribution[hidden] { display: none; }
+      .bio .dino-attribution a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+      .womp-ghost-stage, .womp-ghost { display: block; width: 100%; height: 100%; }
+      .womp-ghost-stage { overflow: hidden; }
+      .womp-dino-sprite {
+        display: block; width: 100%; height: 100%; image-rendering: pixelated;
+        background-size: 2400% 100%; background-repeat: no-repeat;
+      }
+      .dino-body, .dino-jaw, .dino-mouth { display: none; }
+      .womp-preview[data-ghost-motion="chomp"] .womp-ghost { animation: none; transform: none; }
+      .womp-preview[data-ghost-motion="chomp"]:not([hidden]) .womp-dino-sprite {
+        position: relative; animation: none; background-image: none !important;
+      }
+      .womp-preview[data-ghost-motion="chomp"] .dino-body,
+      .womp-preview[data-ghost-motion="chomp"] .dino-jaw {
+        display: block; position: absolute; inset: 0;
+        background: var(--dino-art) 0 0 / 2400% 100% no-repeat;
+        image-rendering: pixelated;
+      }
+      /* Rig the existing lower-jaw pixels (x14–19, y10–12); preserve the original body. */
+      .womp-preview[data-ghost-motion="chomp"] .dino-body {
+        clip-path: polygon(0 0,100% 0,100% 41.6667%,58.3333% 41.6667%,58.3333% 50%,100% 50%,100% 100%,0 100%);
+      }
+      .womp-preview[data-ghost-motion="chomp"] .dino-jaw {
+        clip-path: inset(41.6667% 20.8333% 50% 58.3333%);
+        animation: dino-chomp 3.2s steps(1,end) infinite;
+      }
+      .womp-preview[data-ghost-motion="chomp"] .dino-mouth {
+        display: block; position: absolute; left: 58.3333%; top: 41.6667%;
+        width: 20.8333%; height: 16.6667%; background: #323821;
+        transform-origin: top; animation: dino-mouth-open 3.2s steps(1,end) infinite;
+      }
+      @keyframes dino-chomp {
+        0%, 22%, 40%, 100% { transform: translateY(0); }
+        12%, 30% { transform: translateY(8.3333%); }
+        18%, 36% { transform: translateY(4.1667%); }
+      }
+      @keyframes dino-mouth-open {
+        0%, 22%, 40%, 100% { transform: scaleY(0); }
+        12%, 30% { transform: scaleY(1); }
+        18%, 36% { transform: scaleY(.75); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .womp-preview[data-ghost-motion="chomp"] .dino-jaw { animation: none; }
+        .womp-preview[data-ghost-motion="chomp"] .dino-mouth { display: none; }
+      }
+      .palaestra-preview {
+        width: 160px;
+        height: 28px;
+        padding: 0;
+        animation: none;
+      }
+      .womp-preview,
+      .bronco-preview,
+      .palaestra-preview {
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+      }
+      .bronco-preview {
+        width: 40px;
+        height: 26px;
+        padding: 0;
+        animation: none;
+      }
+      .bronco-horse {
+        position: relative;
+        display: block;
+        width: 40px;
+        height: 26px;
+        transform: scaleX(-1);
+      }
+      .gallop-frame {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background: var(--ink);
+        -webkit-mask: var(--frame) center / contain no-repeat;
+        mask: var(--frame) center / contain no-repeat;
+      }
+      .bronco-preview:not([hidden]) .gallop-frame {
+        animation: bronco-gallop 840ms steps(1, end) infinite;
+        animation-delay: calc(var(--frame-index) * 70ms - 840ms);
+      }
+      @keyframes bronco-gallop {
+        0% { opacity: 1; }
+        8.333333%, 100% { opacity: 0; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bronco-preview:not([hidden]) .gallop-frame { animation: none; }
+        .bronco-preview:not([hidden]) .gallop-frame:first-child { opacity: 1; }
+      }
+
+      .palaestra-tiles {
+        display: block;
+        width: 100%;
+        height: 100%;
+        color: #333333;
+      }
+      .palaestra-tiles line { stroke: #d5d5d5; }
+      .palaestra-tiles rect { fill: var(--bg); }
+      .palaestra-preview:not([hidden]) .falling-tile {
+        animation: palaestra-fall 480ms cubic-bezier(0.42, 0, 0.75, 1) both;
+        animation-delay: calc(200ms + var(--order) * 110ms);
+      }
+      @keyframes palaestra-fall {
+        from { transform: rotate(0); }
+        to { transform: rotate(var(--tilt)); }
+      }
+      @media (prefers-color-scheme: dark) {
+        .palaestra-tiles { color: #dadada; }
+        .palaestra-tiles line { stroke: #555; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .palaestra-preview:not([hidden]) .falling-tile {
+          animation: none;
+          transform: rotate(var(--tilt));
+        }
+      }
     </style>
   </head>
   <body>
@@ -101,14 +340,29 @@
         <p>
           I like to make things with friends, and make friends with strangers.
         </p>
+        <p>
+          I founded <a href="https://tryclearly.app/" data-preview="mosaic-preview">Mosaic</a>, building AI tools for chronic illness. Previously,
+          I was the first engineer at <a class="womp-link" data-preview="womp-preview" href="https://aigrant.com/#:~:text=Womp%20Labs">Womp Labs</a><span id="womp-preview" class="link-preview womp-preview" data-art="ghost" data-character="vita" data-ghost-motion="chomp" hidden>
+            <button class="dino-credit-toggle" type="button" aria-label="About this dinosaur" aria-expanded="false" aria-controls="dino-attribution" title="About this dinosaur"><span class="womp-ghost-stage"><span class="womp-ghost" aria-hidden="true"><span class="womp-dino-sprite" style="--dino-art: url('/assets/womp-dinos/vita.png'); background-image: var(--dino-art)"><span class="dino-mouth"></span><span class="dino-body"></span><span class="dino-jaw"></span></span></span></span></button>
+            <span id="dino-attribution" class="dino-attribution" hidden>
+              <a href="https://arks.itch.io/dino-characters" target="_blank" rel="noopener" title="Dino Characters by Arks; motion modified for this site.">Arks</a> <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+            </span>
+          </span> (AI Grant) and the second at
+          <a href="https://www.ycombinator.com/companies/bronco-ai" data-preview="bronco-preview">Bronco</a> (YC S23).
+        </p>
+        <p>
+          Now, I’m a research fellow at <a href="https://sparai.org/" data-preview="spar-preview">SPAR</a>,
+          working with <a href="https://palaestraresearch.org/" data-preview="palaestra-preview">Palaestra Research</a>.
+        </p>
       </div>
 
-      <nav class="site-nav">
-          <a href="/notes" title="Notes"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.355 18.538a68.967 68.959 0 0 0 1.858-2.954.81.81 0 0 0-.062-.9c-.516-.685-1.504-2.075-2.042-3.362-.553-1.321-.636-3.375-.64-4.377a1.707 1.707 0 0 0-.358-1.05l-3.198-4.064a3.744 3.744 0 0 1-.076.543c-.106.503-.307 1.004-.536 1.5-.134.29-.29.6-.446.914l-.31.626c-.516 1.068-.997 2.227-1.132 3.59-.124 1.26.046 2.73.815 4.481.128.011.257.025.386.044a6.363 6.363 0 0 1 3.326 1.505c.916.79 1.744 1.922 2.415 3.5zM8.199 22.569c.073.012.146.02.22.02.78.024 2.095.092 3.16.29.87.16 2.593.64 4.01 1.055 1.083.316 2.198-.548 2.355-1.664.114-.814.33-1.735.725-2.58l-.01.005c-.67-1.87-1.522-3.078-2.416-3.849a5.295 5.295 0 0 0-2.778-1.257c-1.54-.216-2.952.19-3.84.45.532 2.218.368 4.829-1.425 7.531zM5.533 9.938c-.023.1-.056.197-.098.29L2.82 16.059a1.602 1.602 0 0 0 .313 1.772l4.116 4.24c2.103-3.101 1.796-6.02.836-8.3-.728-1.73-1.832-3.081-2.55-3.831zM9.32 14.01c.615-.183 1.606-.465 2.745-.534-.683-1.725-.848-3.233-.716-4.577.154-1.552.7-2.847 1.235-3.95.113-.235.223-.454.328-.664.149-.297.288-.577.419-.86.217-.47.379-.885.46-1.27.08-.38.08-.72-.014-1.043-.095-.325-.297-.675-.68-1.06a1.6 1.6 0 0 0-1.475.36l-4.95 4.452a1.602 1.602 0 0 0-.513.952l-.427 2.83c.672.59 2.328 2.316 3.335 4.711.09.21.175.43.253.653z"/></svg><span>notes</span></a>
-          <a href="/books" title="Books"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.346.026c.422-.083.859.037 1.179.325.346.284.55.705.557 1.153-.023.457-.247.88-.612 1.156l-2.182 1.748a.601.601 0 0 0-.255.43.52.52 0 0 0 .11.424 5.886 5.886 0 0 1 .832 6.58c-1.394 2.79-4.503 3.99-7.501 2.927a.792.792 0 0 0-.499-.01c-.224.07-.303.18-.453.383l-.014.02-.941 1.254s-.792.985.457.935c3.027-.119 3.817-.119 5.439-.01 2.641.18 3.806 1.903 3.806 3.275 0 1.623-1.036 3.383-3.809 3.383a117.46 117.46 0 0 0-5.517-.03c-.31.005-.597.013-.835.02-.228.006-.41.011-.52.011-.712 0-1.648-.186-1.66-1.068-.008-.729.624-1.12 1.11-1.172.43-.045.815.007 1.24.064.252.034.518.07.815.088.185.011.366.025.552.038.53.038 1.102.08 1.926.087.427.005.759.01 1.025.015.695.012.941.016 1.28-.015 1.248-.112 1.832-.61 1.832-1.376 0-.805-.584-1.264-1.698-1.414-1.564-.213-2.33-.163-3.72-.074a87.66 87.66 0 0 1-1.669.095c-.608.029-2.449.026-2.682-1.492-.053-.416-.073-1.116.807-2.325l.75-1.003c.36-.49.582-.898.053-1.559 0 0-.39-.468-.52-.638-1.215-1.587-1.512-4.08-.448-6.114 1.577-3.011 5.4-4.26 8.37-2.581.253.143.438.203.655.163.201-.032.27-.167.363-.344.02-.04.042-.082.067-.126.004-.01.241-.465.535-1.028l.734-1.41a1.493 1.493 0 0 1 1.041-.785ZM9.193 13.243c1.854.903 3.912.208 5.254-2.47 1.352-2.699.827-5.11-1.041-6.023C10.918 3.537 8.81 5.831 8.017 7.41c-1.355 2.698-.717 4.886 1.147 5.818Z"/></svg><span>books</span></a>
-          <a href="/work" title="Work"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg><span>work</span></a>
-          <a href="/art" title="Art"><svg viewBox="2.5 2.5 19 19" width="16" height="16" fill="currentColor"><path d="M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg><span>art</span></a>
-          <a href="/software/" title="Software"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M24 5.359v13.282A5.36 5.36 0 0 1 18.641 24H5.359A5.36 5.36 0 0 1 0 18.641V5.359A5.36 5.36 0 0 1 5.359 0h13.282A5.36 5.36 0 0 1 24 5.359m-.932-.233A4.196 4.196 0 0 0 18.874.932H5.126A4.196 4.196 0 0 0 .932 5.126v13.748a4.196 4.196 0 0 0 4.194 4.194h13.748a4.196 4.196 0 0 0 4.194-4.194zm-.816.233v13.282a3.613 3.613 0 0 1-3.611 3.611H5.359a3.613 3.613 0 0 1-3.611-3.611V5.359a3.613 3.613 0 0 1 3.611-3.611h13.282a3.613 3.613 0 0 1 3.611 3.611M8.854 4.194v6.495h.962V4.194zM5.483 9.493v1.085h.597V9.48q.283-.037.508-.133.373-.165.575-.448.208-.284.208-.649a.9.9 0 0 0-.171-.568 1.4 1.4 0 0 0-.426-.388 3 3 0 0 0-.544-.261 32 32 0 0 0-.545-.209 1.8 1.8 0 0 1-.426-.216q-.164-.12-.164-.284 0-.223.179-.351.18-.126.485-.127.344 0 .575.105.239.105.5.298l.433-.5a2.3 2.3 0 0 0-.605-.433 1.6 1.6 0 0 0-.582-.159v-.968h-.597v.978a2 2 0 0 0-.477.127 1.2 1.2 0 0 0-.545.411q-.194.268-.194.634 0 .335.164.56.164.224.418.38a4 4 0 0 0 .552.262q.291.104.545.209.261.104.425.238a.39.39 0 0 1 .165.321q0 .225-.187.359-.18.134-.537.134-.381 0-.717-.134a4.4 4.4 0 0 1-.649-.351l-.388.589q.209.173.477.306.276.135.575.217.191.046.373.064"/></svg><span>software</span></a>
+      <nav class="site-nav" aria-label="Explore">
+        <ul>
+          <li><a href="/notes" title="Notes"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.355 18.538a68.967 68.959 0 0 0 1.858-2.954.81.81 0 0 0-.062-.9c-.516-.685-1.504-2.075-2.042-3.362-.553-1.321-.636-3.375-.64-4.377a1.707 1.707 0 0 0-.358-1.05l-3.198-4.064a3.744 3.744 0 0 1-.076.543c-.106.503-.307 1.004-.536 1.5-.134.29-.29.6-.446.914l-.31.626c-.516 1.068-.997 2.227-1.132 3.59-.124 1.26.046 2.73.815 4.481.128.011.257.025.386.044a6.363 6.363 0 0 1 3.326 1.505c.916.79 1.744 1.922 2.415 3.5zM8.199 22.569c.073.012.146.02.22.02.78.024 2.095.092 3.16.29.87.16 2.593.64 4.01 1.055 1.083.316 2.198-.548 2.355-1.664.114-.814.33-1.735.725-2.58l-.01.005c-.67-1.87-1.522-3.078-2.416-3.849a5.295 5.295 0 0 0-2.778-1.257c-1.54-.216-2.952.19-3.84.45.532 2.218.368 4.829-1.425 7.531zM5.533 9.938c-.023.1-.056.197-.098.29L2.82 16.059a1.602 1.602 0 0 0 .313 1.772l4.116 4.24c2.103-3.101 1.796-6.02.836-8.3-.728-1.73-1.832-3.081-2.55-3.831zM9.32 14.01c.615-.183 1.606-.465 2.745-.534-.683-1.725-.848-3.233-.716-4.577.154-1.552.7-2.847 1.235-3.95.113-.235.223-.454.328-.664.149-.297.288-.577.419-.86.217-.47.379-.885.46-1.27.08-.38.08-.72-.014-1.043-.095-.325-.297-.675-.68-1.06a1.6 1.6 0 0 0-1.475.36l-4.95 4.452a1.602 1.602 0 0 0-.513.952l-.427 2.83c.672.59 2.328 2.316 3.335 4.711.09.21.175.43.253.653z"/></svg><span>notes</span></a></li>
+          <li><a href="/books" title="Books"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.346.026c.422-.083.859.037 1.179.325.346.284.55.705.557 1.153-.023.457-.247.88-.612 1.156l-2.182 1.748a.601.601 0 0 0-.255.43.52.52 0 0 0 .11.424 5.886 5.886 0 0 1 .832 6.58c-1.394 2.79-4.503 3.99-7.501 2.927a.792.792 0 0 0-.499-.01c-.224.07-.303.18-.453.383l-.014.02-.941 1.254s-.792.985.457.935c3.027-.119 3.817-.119 5.439-.01 2.641.18 3.806 1.903 3.806 3.275 0 1.623-1.036 3.383-3.809 3.383a117.46 117.46 0 0 0-5.517-.03c-.31.005-.597.013-.835.02-.228.006-.41.011-.52.011-.712 0-1.648-.186-1.66-1.068-.008-.729.624-1.12 1.11-1.172.43-.045.815.007 1.24.064.252.034.518.07.815.088.185.011.366.025.552.038.53.038 1.102.08 1.926.087.427.005.759.01 1.025.015.695.012.941.016 1.28-.015 1.248-.112 1.832-.61 1.832-1.376 0-.805-.584-1.264-1.698-1.414-1.564-.213-2.33-.163-3.72-.074a87.66 87.66 0 0 1-1.669.095c-.608.029-2.449.026-2.682-1.492-.053-.416-.073-1.116.807-2.325l.75-1.003c.36-.49.582-.898.053-1.559 0 0-.39-.468-.52-.638-1.215-1.587-1.512-4.08-.448-6.114 1.577-3.011 5.4-4.26 8.37-2.581.253.143.438.203.655.163.201-.032.27-.167.363-.344.02-.04.042-.082.067-.126.004-.01.241-.465.535-1.028l.734-1.41a1.493 1.493 0 0 1 1.041-.785ZM9.193 13.243c1.854.903 3.912.208 5.254-2.47 1.352-2.699.827-5.11-1.041-6.023C10.918 3.537 8.81 5.831 8.017 7.41c-1.355 2.698-.717 4.886 1.147 5.818Z"/></svg><span>books</span></a></li>
+          <li><a href="/art" title="Art"><svg viewBox="2.5 2.5 19 19" width="16" height="16" fill="currentColor"><path d="M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg><span>art</span></a></li>
+          <li><a href="/software/" title="Software"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M24 5.359v13.282A5.36 5.36 0 0 1 18.641 24H5.359A5.36 5.36 0 0 1 0 18.641V5.359A5.36 5.36 0 0 1 5.359 0h13.282A5.36 5.36 0 0 1 24 5.359m-.932-.233A4.196 4.196 0 0 0 18.874.932H5.126A4.196 4.196 0 0 0 .932 5.126v13.748a4.196 4.196 0 0 0 4.194 4.194h13.748a4.196 4.196 0 0 0 4.194-4.194zm-.816.233v13.282a3.613 3.613 0 0 1-3.611 3.611H5.359a3.613 3.613 0 0 1-3.611-3.611V5.359a3.613 3.613 0 0 1 3.611-3.611h13.282a3.613 3.613 0 0 1 3.611 3.611M8.854 4.194v6.495h.962V4.194zM5.483 9.493v1.085h.597V9.48q.283-.037.508-.133.373-.165.575-.448.208-.284.208-.649a.9.9 0 0 0-.171-.568 1.4 1.4 0 0 0-.426-.388 3 3 0 0 0-.544-.261 32 32 0 0 0-.545-.209 1.8 1.8 0 0 1-.426-.216q-.164-.12-.164-.284 0-.223.179-.351.18-.126.485-.127.344 0 .575.105.239.105.5.298l.433-.5a2.3 2.3 0 0 0-.605-.433 1.6 1.6 0 0 0-.582-.159v-.968h-.597v.978a2 2 0 0 0-.477.127 1.2 1.2 0 0 0-.545.411q-.194.268-.194.634 0 .335.164.56.164.224.418.38a4 4 0 0 0 .552.262q.291.104.545.209.261.104.425.238a.39.39 0 0 1 .165.321q0 .225-.187.359-.18.134-.537.134-.381 0-.717-.134a4.4 4.4 0 0 1-.649-.351l-.388.589q.209.173.477.306.276.135.575.217.191.046.373.064"/></svg><span>software</span></a></li>
+        </ul>
           <!-- places icon hidden until the page is fleshed out (bd taziksh-x0w)
           <a href="/places" title="Places"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.527 4.799c1.212 2.608.937 5.678-.405 8.173-1.101 2.047-2.744 3.74-4.098 5.614-.619.858-1.244 1.75-1.669 2.727-.141.325-.263.658-.383.992-.121.333-.224.673-.34 1.008-.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671L19.527 4.799zM8.545 7.705l-3.959 4.707c.724 1.54 1.821 2.863 2.871 4.18.247.31.494.622.737.936l4.984-5.925-.029.01c-1.741.601-3.691-.291-4.392-1.987a3.377 3.377 0 0 1-.209-.716c-.063-.437-.077-.761-.004-1.198l.001-.007zM5.492 3.149l-.003.004c-1.947 2.466-2.281 5.88-1.117 8.77l4.785-5.689-.058-.05-3.607-3.035zM14.661.436l-3.838 4.563a.295.295 0 0 1 .027-.01c1.6-.551 3.403.15 4.22 1.626.176.319.323.683.377 1.045.068.446.085.773.012 1.22l-.003.016 3.836-4.561A8.382 8.382 0 0 0 14.67.439l-.009-.003zM9.466 5.868L14.162.285l-.047-.012A8.31 8.31 0 0 0 11.986 0a8.439 8.439 0 0 0-6.169 2.766l-.016.018 3.665 3.084z"/></svg></a>
           -->
@@ -128,5 +382,234 @@
       </footer>
     </main>
 
+
+    <!-- Gallop frames: scl / Eadweard Muybridge, CC0. See assets/bronco-gallop/SOURCE.txt. -->
+    <aside id="bronco-preview" class="link-preview bronco-preview" aria-label="Galloping horse and rider" hidden>
+      <span class="bronco-horse" aria-hidden="true">
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse1.svg'); --frame-index: 0"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse2.svg'); --frame-index: 1"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse3.svg'); --frame-index: 2"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse4.svg'); --frame-index: 3"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse5.svg'); --frame-index: 4"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse6.svg'); --frame-index: 5"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse7.svg'); --frame-index: 6"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse8.svg'); --frame-index: 7"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse9.svg'); --frame-index: 8"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse10.svg'); --frame-index: 9"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse11.svg'); --frame-index: 10"></span>
+        <span class="gallop-frame" style="--frame: url('/assets/bronco-gallop/horse12.svg'); --frame-index: 11"></span>
+      </span>
+    </aside>
+    <!-- Domino drawing adapted from Palaestra Research's homepage: https://palaestraresearch.org/ -->
+    <aside id="palaestra-preview" class="link-preview palaestra-preview" aria-label="Palaestra's falling tile design" hidden>
+      <svg class="palaestra-tiles" viewBox="0 0 640 110" fill="none" aria-hidden="true">
+        <line x1="10" y1="98" x2="630" y2="98" stroke-width="1"/>
+        <g stroke="currentColor" stroke-width="1.25">
+          <rect class="falling-tile" x="38" y="30" width="13" height="68" rx="2" style="transform-origin: 51px 98px; --order: 0; --tilt: 76deg"/>
+          <rect class="falling-tile" x="86" y="30" width="13" height="68" rx="2" style="transform-origin: 99px 98px; --order: 1; --tilt: 72deg"/>
+          <rect class="falling-tile" x="134" y="30" width="13" height="68" rx="2" style="transform-origin: 147px 98px; --order: 2; --tilt: 66deg"/>
+          <rect class="falling-tile" x="182" y="30" width="13" height="68" rx="2" style="transform-origin: 195px 98px; --order: 3; --tilt: 57deg"/>
+          <rect class="falling-tile" x="230" y="30" width="13" height="68" rx="2" style="transform-origin: 243px 98px; --order: 4; --tilt: 46deg"/>
+          <rect class="falling-tile" x="278" y="30" width="13" height="68" rx="2" style="transform-origin: 291px 98px; --order: 5; --tilt: 33deg"/>
+          <rect class="falling-tile" x="326" y="30" width="13" height="68" rx="2" style="transform-origin: 339px 98px; --order: 6; --tilt: 20deg"/>
+          <rect class="falling-tile" x="374" y="30" width="13" height="68" rx="2" style="transform-origin: 387px 98px; --order: 7; --tilt: 9deg"/>
+          <rect class="falling-tile" x="422" y="30" width="13" height="68" rx="2" style="transform-origin: 435px 98px; --order: 8; --tilt: 3deg"/>
+          <rect class="falling-tile" x="470" y="30" width="13" height="68" rx="2" style="transform-origin: 483px 98px; --order: 9; --tilt: 0deg"/>
+          <rect class="falling-tile" x="518" y="30" width="13" height="68" rx="2" style="transform-origin: 531px 98px; --order: 10; --tilt: 0deg"/>
+          <rect class="falling-tile" x="566" y="30" width="13" height="68" rx="2" style="transform-origin: 579px 98px; --order: 11; --tilt: 0deg"/>
+        </g>
+      </svg>
+    </aside>
+
+    <aside id="spar-preview" class="link-preview" aria-label="SPAR website preview" hidden>
+      <img class="preview-media" src="/assets/spar-homepage-preview.png" width="1280" height="720" alt="SPAR homepage: Connecting rising talent with expertise to tackle risks from AI" decoding="async">
+      <div class="preview-caption"><strong>SPAR</strong><span>sparai.org ↗</span></div>
+    </aside>
+    <aside id="mosaic-preview" class="link-preview" aria-label="Mosaic preview" hidden>
+      <video class="preview-media" src="/assets/mosaic-hover.mp4" poster="/assets/clearly-preview.jpg" preload="none" muted loop playsinline aria-label="Clearly website walkthrough"></video>
+      <div class="preview-caption"><strong>Clearly, by Mosaic</strong><span>tryclearly.app ↗</span></div>
+    </aside>
+
+    <script>
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+      document.querySelectorAll('.site-nav a, .portals a').forEach((link) => {
+        const isFooter = link.closest('.portals') !== null;
+        link.addEventListener('pointermove', (event) => {
+          if (reducedMotion.matches || !finePointer.matches) return;
+          const bounds = link.getBoundingClientRect();
+          const position = Math.max(-1, Math.min(1,
+            (event.clientX - bounds.left) / bounds.width * 2 - 1));
+          link.style.setProperty('--icon-x', `${position * (isFooter ? 1 : 2)}px`);
+          link.style.setProperty('--icon-turn', `${position * (isFooter ? 6 : 10)}deg`);
+        });
+        link.addEventListener('pointerleave', () => {
+          link.style.removeProperty('--icon-x');
+          link.style.removeProperty('--icon-turn');
+        });
+      });
+
+      const signatureLink = document.querySelector('.home');
+      function leanSignature(event) {
+        if (event.pointerType === 'touch' || reducedMotion.matches || !finePointer.matches) return;
+        const bounds = signatureLink.getBoundingClientRect();
+        const x = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
+        const y = Math.max(-1, Math.min(1, (event.clientY - bounds.top) / bounds.height * 2 - 1));
+        signatureLink.style.setProperty('--signature-x', `${x * 1.5}px`);
+        signatureLink.style.setProperty('--signature-y', `${y * 1.5}px`);
+        signatureLink.style.setProperty('--signature-turn', `${x * 5}deg`);
+      }
+      function resetSignature() {
+        ['--signature-x', '--signature-y', '--signature-turn'].forEach((property) => signatureLink.style.removeProperty(property));
+      }
+      signatureLink.addEventListener('pointermove', leanSignature);
+      signatureLink.addEventListener('pointerleave', resetSignature);
+      signatureLink.addEventListener('pointercancel', resetSignature);
+      reducedMotion.addEventListener('change', resetSignature);
+      finePointer.addEventListener('change', resetSignature);
+      let lastSpark = -Infinity;
+      function sparkle() {
+        if (reducedMotion.matches || performance.now() - lastSpark < 700) return;
+        lastSpark = performance.now();
+        const mark = signatureLink.querySelector('.signature');
+        for (let i = 0; i < 6; i++) {
+          const angle = i * Math.PI / 3 - Math.PI / 2;
+          const radius = i % 2 ? 28 : 21;
+          const spark = document.createElement('span');
+          spark.className = 'pixel-spark';
+          spark.setAttribute('aria-hidden', 'true');
+          spark.style.left = `${mark.offsetLeft + mark.offsetWidth / 2}px`;
+          spark.style.top = `${mark.offsetTop + mark.offsetHeight / 2}px`;
+          spark.style.setProperty('--spark-x', `${Math.round(Math.cos(angle) * radius)}px`);
+          spark.style.setProperty('--spark-y', `${Math.round(Math.sin(angle) * radius)}px`);
+          signatureLink.appendChild(spark);
+          window.setTimeout(() => spark.remove(), 700);
+        }
+      }
+      signatureLink.addEventListener('pointerenter', (event) => {
+        leanSignature(event);
+        if (event.pointerType !== 'touch') sparkle();
+      });
+      signatureLink.addEventListener('focus', sparkle);
+
+      // Previews enhance the links; clicking or tapping still navigates normally.
+      let activePreview = null;
+      let activeTrigger = null;
+      let previewTimer;
+      const dinoAttribution = document.getElementById('dino-attribution');
+      const dinoCreditToggle = document.querySelector('.dino-credit-toggle');
+      dinoCreditToggle.addEventListener('click', () => {
+        dinoAttribution.hidden = !dinoAttribution.hidden;
+        dinoCreditToggle.setAttribute('aria-expanded', String(!dinoAttribution.hidden));
+        if (!dinoAttribution.hidden) {
+          const rect = dinoCreditToggle.getBoundingClientRect();
+          const noteWidth = dinoAttribution.offsetWidth;
+          const left = Math.max(12 - rect.left, Math.min(rect.width + 8, window.innerWidth - rect.left - noteWidth - 12));
+          dinoAttribution.style.left = `${left}px`;
+          dinoAttribution.style.top = left < rect.width ? `${rect.height + 4}px` : `${Math.max(0, (rect.height - dinoAttribution.offsetHeight) / 2)}px`;
+        }
+      });
+      function hidePreview() {
+        clearTimeout(previewTimer);
+        if (!activePreview) return;
+        dinoAttribution.hidden = true;
+        dinoCreditToggle.setAttribute('aria-expanded', 'false');
+        activePreview.hidden = true;
+        delete activePreview.dataset.exiting;
+        activePreview.querySelector('video')?.pause();
+        activePreview = null;
+        activeTrigger = null;
+      }
+      function positionPreview() {
+        if (!activePreview || !activeTrigger) return;
+        const rect = activeTrigger.getBoundingClientRect();
+        const width = activePreview.offsetWidth;
+        const height = activePreview.offsetHeight;
+        const isDecoration = activePreview.matches('.womp-preview, .bronco-preview, .palaestra-preview');
+        const gap = isDecoration ? 2 : 10;
+        const anchorLeft = isDecoration ? rect.left : rect.left - 16;
+        const left = Math.max(16, Math.min(anchorLeft, window.innerWidth - width - 16));
+        const below = rect.bottom + gap;
+        const top = below + height <= window.innerHeight - 16
+          ? below : Math.max(16, rect.top - height - gap);
+        activePreview.style.left = `${left}px`;
+        activePreview.style.top = `${top}px`;
+      }
+      function showPreview(link) {
+        hidePreview();
+        activeTrigger = link;
+        activePreview = document.getElementById(link.dataset.preview);
+        activePreview.hidden = false;
+        positionPreview();
+        const video = activePreview.querySelector('video');
+        if (video && !reducedMotion.matches) {
+          video.play().then(() => {
+            if (video.closest('.link-preview').hidden) video.pause();
+          }).catch(() => {});
+        }
+      }
+      // Warm the small hover clip after initial rendering, when desktop previews are useful.
+      const mosaicVideo = document.querySelector('#mosaic-preview video');
+      const warmMosaicPreview = () => {
+        const connection = navigator.connection;
+        if (!finePointer.matches || reducedMotion.matches || connection?.saveData ||
+            ['slow-2g', '2g'].includes(connection?.effectiveType)) return;
+        if (mosaicVideo.preload === 'auto') return;
+        mosaicVideo.preload = 'auto';
+        mosaicVideo.load();
+      };
+      const scheduleMosaicWarmup = () => {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(warmMosaicPreview, { timeout: 2500 });
+        } else {
+          window.setTimeout(warmMosaicPreview, 1200);
+        }
+      };
+      if (document.readyState === 'complete') scheduleMosaicWarmup();
+      else window.addEventListener('load', scheduleMosaicWarmup, { once: true });
+      function schedulePreviewClose() {
+        if (activePreview?.contains(document.activeElement)) return;
+        clearTimeout(previewTimer);
+        previewTimer = window.setTimeout(hidePreview, 180);
+      }
+      document.querySelectorAll('[data-preview]').forEach((link) => {
+        link.addEventListener('pointerenter', () => {
+          if (finePointer.matches) showPreview(link);
+        });
+        link.addEventListener('pointerleave', schedulePreviewClose);
+        link.addEventListener('focus', () => {
+          if (link.matches(':focus-visible')) showPreview(link);
+        });
+        link.addEventListener('blur', (event) => {
+          if (activePreview?.contains(event.relatedTarget)) return;
+          hidePreview();
+        });
+        link.addEventListener('click', hidePreview);
+      });
+      document.querySelectorAll('.link-preview').forEach((preview) => {
+        preview.addEventListener('pointerenter', () => clearTimeout(previewTimer));
+        preview.addEventListener('pointerleave', schedulePreviewClose);
+        preview.addEventListener('focusin', () => clearTimeout(previewTimer));
+        preview.addEventListener('focusout', (event) => {
+          if (!preview.contains(event.relatedTarget) && event.relatedTarget !== activeTrigger) hidePreview();
+        });
+      });
+      document.addEventListener('pointerdown', (event) => {
+        if (!dinoAttribution.hidden && !activePreview?.contains(event.target) && event.target !== activeTrigger) hidePreview();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          if (activePreview?.contains(document.activeElement)) activeTrigger?.focus();
+          hidePreview();
+        }
+      });
+      window.addEventListener('scroll', hidePreview, { passive: true });
+      window.addEventListener('resize', hidePreview);
+      reducedMotion.addEventListener('change', hidePreview);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) hidePreview();
+      });
+    </script>
   </body>
 </html>

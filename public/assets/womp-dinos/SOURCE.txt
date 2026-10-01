@@ -1,0 +1,6 @@
+Dino Characters by Arks / @ArksDigital
+https://arks.itch.io/dino-characters
+https://twitter.com/ArksDigital
+License: CC BY 4.0 https://creativecommons.org/licenses/by/4.0/
+Original sprite sheets, version 1.1. Added CSS jaw movement and timing; image files unchanged.
+Visible attribution: click the dinosaur beside Womp Labs on the homepage (#dino-attribution).

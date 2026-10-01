@@ -1,0 +1,6 @@
+Galloping horse — scl
+https://opengameart.org/content/galloping-horse
+License: CC0 https://creativecommons.org/publicdomain/zero/1.0/
+Source frames based on Eadweard Muybridge’s 1878 photography.
+Downloaded from https://opengameart.org/sites/default/files/runninghorse.zip
+Original PNG frames retained. SVG outlines traced with Potrace, smoothing the contour and removing stray pixels. CSS applies theme ink color and rightward orientation.
