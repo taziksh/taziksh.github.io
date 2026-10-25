@@ -21,7 +21,8 @@
   article p:has(+ .tseitin-definitions) { margin-bottom: 0.6rem; }
   .tseitin-equation .katex-display { margin: 0; padding: 0.5rem 0.25rem; overflow-x: auto; overflow-y: hidden; }
   .tseitin-equation .katex-display > .katex { width: max-content; min-width: 100%; }
-  .tseitin-equation .tseitin-term { display: inline-block; position: relative; cursor: default; }
+  /* Keep hit targets above KaTeX’s overlapping alignment struts. */
+  .tseitin-equation .tseitin-term { display: inline-block; position: relative; z-index: 1; cursor: default; }
   .tseitin-equation .tseitin-term > * { pointer-events: none; }
   .tseitin-equation .tseitin-term::after { content: ''; position: absolute; inset: -0.15em -0.18em; }
   .tseitin-y1, .tseitin-expression-1 { --term-color: var(--tseitin-1); }

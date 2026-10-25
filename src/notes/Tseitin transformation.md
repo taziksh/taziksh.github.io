@@ -41,4 +41,4 @@ $$
 
 The rest is fairly straightforward: we rewrite each equivalence as CNF using its truth table.
 
-If you’re interested, check out [this tutorial](https://rbcborealis.com/research-blogs/tutorial-9-sat-solvers-i-introduction-and-applications/)
+If you’re interested in more details, check out [this tutorial](https://rbcborealis.com/research-blogs/tutorial-9-sat-solvers-i-introduction-and-applications/).
