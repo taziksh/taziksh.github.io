@@ -1,0 +1,27 @@
+---
+import katex from 'katex';
+interface Props { tex: string; definition?: number; }
+const { tex, definition } = Astro.props;
+const markedTex = tex.replace(/y_([1-4])\b/g, (_, index) => `\\htmlClass{tseitin-term tseitin-y${index}}{y_${index}}`);
+const html = katex.renderToString(markedTex, {
+  displayMode: true,
+  throwOnError: true,
+  strict: false,
+  trust: context => context.command === '\\htmlClass',
+});
+---
+<div class:list={['tseitin-equation', definition && `tseitin-definition-${definition}`]} set:html={html} />
+
+<style>
+  .tseitin-equation { margin-block: 1.4rem; border-radius: 3px; }
+  .tseitin-equation[class*='tseitin-definition-'] { width: fit-content; max-width: 100%; margin: 0.2rem auto; }
+  .tseitin-equation :global(.katex-display) { margin: 0; padding: 0.25rem; overflow-x: auto; overflow-y: hidden; }
+  .tseitin-equation :global(.tseitin-term) { cursor: default; }
+  .tseitin-equation :global(.tseitin-term:hover) { color: var(--accent); }
+  :global(article:has(.tseitin-y1:hover) .tseitin-definition-1),
+  :global(article:has(.tseitin-y2:hover) .tseitin-definition-2),
+  :global(article:has(.tseitin-y3:hover) .tseitin-definition-3),
+  :global(article:has(.tseitin-y4:hover) .tseitin-definition-4) {
+    background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  }
+</style>
