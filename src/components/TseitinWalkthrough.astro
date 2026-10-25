@@ -1,0 +1,298 @@
+---
+import katex from 'katex';
+import { groups, clauseTex, colorDefinition, variableTex, rootClause } from '../lib/tseitin';
+
+// All TeX is authored locally; trust enables the four scoped color classes.
+const math = (tex: string) => katex.renderToString(tex, { throwOnError: true, trust: true, strict: false, output: 'htmlAndMathml' });
+const original = '\\phi = ((x_1 \\lor x_2) \\leftrightarrow x_3) \\Rightarrow \\lnot x_4';
+const stages = [
+  { tex: `\\phi = (${variableTex(5)} \\leftrightarrow x_3) \\Rightarrow \\lnot x_4`, text: 'Name the innermost OR. Everywhere that whole piece appeared, we can now write y₁.' },
+  { tex: `\\phi = ${variableTex(6)} \\Rightarrow \\lnot x_4`, text: 'Name the equivalence: y₂ is true exactly when y₁ and x₃ agree.' },
+  { tex: `\\phi = ${variableTex(6)} \\Rightarrow ${variableTex(7)}`, text: 'Name the negation: y₃ is the opposite of x₄.' },
+  { tex: `\\phi = ${variableTex(8)}`, text: 'Name the final implication. The whole formula’s output is now y₄, provided all four definitions hold.' },
+];
+const flatClauses = groups.flatMap(group => group.clauses.map(clause => ({ clause, id: group.id })));
+---
+
+<div class="tseitin" data-tseitin>
+  <details class="notation">
+    <summary>A quick symbol refresher</summary>
+    <p>Each variable is either true (1) or false (0). <span set:html={math('\\lor')} /> means OR; <span set:html={math('\\land')} /> means AND; <span set:html={math('\\lnot')} /> means NOT. An implication <span set:html={math('a \\Rightarrow b')} /> is false only when a is true and b is false. Equivalence <span set:html={math('a \\leftrightarrow b')} /> means the two values agree.</p>
+    <p>A <strong>literal</strong> is a variable or its negation. A <strong>clause</strong> is an OR of literals. <strong>Conjunctive normal form (CNF)</strong> is an AND of clauses; every clause must pass.</p>
+  </details>
+
+  <h2>1. Give each piece a name</h2>
+  <p>Here’s the formula. Our job is to express the condition “this evaluates to true” as CNF.</p>
+  <div class="equation original" set:html={math(original)} />
+  <p>Work from the inside out. Each new variable records the output of just one operator.</p>
+  <div class="definitions">
+    {groups.map(group => (
+      <div class="definition" data-definition={group.id}>
+        <span class={`gate-label tseitin-y${group.id}`}>{group.name}</span>
+        <div class="equation" set:html={math(colorDefinition(group.definition))} />
+      </div>
+    ))}
+  </div>
+  <div class="stepper" data-interactive hidden>
+    <p class="eyebrow">Follow the substitutions</p>
+    <div class="step-buttons" role="group" aria-label="Substitution step">
+      {groups.map(group => <button type="button" data-step={group.id - 1} aria-pressed={group.id === 1}>Step {group.id}</button>)}
+    </div>
+    <div aria-live="polite" aria-atomic="true">
+      {stages.map((stage, index) => (
+        <div data-stage={index} hidden={index !== 0}>
+          <div class="equation stage-equation" set:html={math(stage.tex)} />
+          <p class="small">{stage.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+  <p>The colors follow the names throughout the post. The subscripts identify them too, so you don’t need to distinguish the colors.</p>
+
+  <h2>2. Turn a definition into clauses</h2>
+  <p>Let’s do the OR gate together. Saying <span set:html={math(colorDefinition('y_1 \\leftrightarrow (x_1 \\lor x_2)'))} /> is a promise in both directions.</p>
+  <details open>
+    <summary><span class="tseitin-y1">y₁ · OR</span> — a worked example</summary>
+    <p>If either input is true, the output must be true:</p>
+    <div class="equation" set:html={math(colorDefinition('x_1 \\Rightarrow y_1 \\;\\equiv\\; (\\lnot x_1 \\lor y_1)'))} />
+    <div class="equation" set:html={math(colorDefinition('x_2 \\Rightarrow y_1 \\;\\equiv\\; (\\lnot x_2 \\lor y_1)'))} />
+    <p>In the other direction, a true output needs at least one true input:</p>
+    <div class="equation" set:html={math(colorDefinition('y_1 \\Rightarrow (x_1 \\lor x_2)'))} />
+    <div class="equation" set:html={math(clauseTex([-5, 1, 2]))} />
+    <p>AND these three clauses together. If both inputs are false, the third clause forces y₁ to be false. If either input is true, the first two force y₁ to be true.</p>
+  </details>
+
+  <div class="quiz">
+    <p class="eyebrow">Your turn · the NOT gate</p>
+    <p>We want <span set:html={math(colorDefinition('y_3 \\leftrightarrow \\lnot x_4'))} />. One clause is <span set:html={math(clauseTex([7, 4]))} />. It rules out both values being false. Which second clause rules out both being true?</p>
+    <div class="answers" data-interactive hidden role="group" aria-label="Choose the missing NOT clause">
+      <button type="button" data-answer="same" aria-label="y3 OR NOT x4" aria-pressed="false"><span set:html={math(clauseTex([7, -4]))} /></button>
+      <button type="button" data-answer="correct" aria-label="NOT y3 OR NOT x4" aria-pressed="false"><span set:html={math(clauseTex([-7, -4]))} /></button>
+      <button type="button" data-answer="other" aria-label="NOT y3 OR x4" aria-pressed="false"><span set:html={math(clauseTex([-7, 4]))} /></button>
+    </div>
+    <p class="feedback small" data-feedback aria-live="polite" aria-atomic="true"></p>
+    <details>
+      <summary>Show the answer and why it works</summary>
+      <div class="equation" set:html={math(clauseTex([-7, -4]))} />
+      <p>When y₃ and x₄ are both true, both negated literals are false, so this clause fails. Together, the two clauses forbid 0,0 and 1,1. Only 0,1 and 1,0 remain: exactly NOT.</p>
+    </details>
+  </div>
+
+  <p>The other two gates use the same idea: forbid every row where the proposed output disagrees with the operator. Expand either recipe to see those forbidden rows.</p>
+  {groups.filter(group => [2, 4].includes(group.id)).map(group => (
+    <details>
+      <summary><span class={`tseitin-y${group.id}`}>y{group.id === 2 ? '₂' : '₄'} · {group.name.toLowerCase()}</span> — {group.clauses.length} clauses</summary>
+      <div class="equation" set:html={math(colorDefinition(group.definition))} />
+      {group.id === 2 ? <p>For (y₂, y₁, x₃), forbid (1,1,0), (1,0,1), (0,1,1), and (0,0,0). The output must be 1 exactly when the inputs agree.</p> : <p>For (y₄, y₂, y₃), forbid (0,0,0), (0,0,1), (0,1,1), and (1,1,0). The first two clauses below cover the first three forbidden rows; the last clause covers the fourth.</p>}
+      {group.clauses.map(clause => <div class="equation" set:html={math(clauseTex(clause))} />)}
+      <p class="small">AND all of these clauses together. A clause is false precisely when every literal in it is false.</p>
+    </details>
+  ))}
+
+  <h2>3. Don’t forget the output</h2>
+  <p>The definitions only make the names honest. They can still describe a formula whose output is false! Add the single-literal clause <span set:html={math(clauseTex(rootClause))} /> to require a true output.</p>
+  <details>
+    <summary>The complete CNF · 13 clauses</summary>
+    <p>Take the AND of every clause below. Parentheses with just y₄ count as a clause too.</p>
+    {groups.map(group => (
+      <div class="clause-group">
+        <span class={`gate-label tseitin-y${group.id}`}>y{['₁', '₂', '₃', '₄'][group.id - 1]} · {group.name}</span>
+        {group.clauses.map(clause => <div class="equation" set:html={math(clauseTex(clause))} />)}
+      </div>
+    ))}
+    <div class="equation root-equation" set:html={math(clauseTex(rootClause))} />
+  </details>
+
+  <h2>4. Try to break it</h2>
+  <p>Start with a false formula whose auxiliary variables all obey their definitions. Toggle the inputs, then try lying about an auxiliary variable. Each clause reports whether it passes.</p>
+  <noscript><p>The playground needs JavaScript. The worked example and all expandable derivations above work without it.</p></noscript>
+  <div class="playground" data-interactive hidden>
+    <fieldset>
+      <legend>Inputs · click to toggle 0 / 1</legend>
+      <div class="toggle-row">
+        {[1, 2, 3, 4].map((id) => <button type="button" data-variable={id - 1} aria-label={`Toggle ${id <= 4 ? "input x" : "auxiliary y"}${id <= 4 ? id : id - 4}`} aria-pressed="false"><span set:html={math(variableTex(id))} /> = <span data-bit>0</span></button>)}
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Auxiliaries · try changing one</legend>
+      <div class="toggle-row">
+        {[5, 6, 7, 8].map(id => <button type="button" data-variable={id - 1} aria-label={`Toggle ${id <= 4 ? "input x" : "auxiliary y"}${id <= 4 ? id : id - 4}`} aria-pressed="false"><span set:html={math(variableTex(id))} /> = <span data-bit>0</span></button>)}
+      </div>
+    </fieldset>
+    <div class="playground-actions">
+      <button type="button" data-repair>Recompute auxiliaries</button>
+      <button type="button" data-reset>Reset example</button>
+    </div>
+    <p class="small">Input changes recompute the auxiliaries. Auxiliary buttons let you break a definition by hand.</p>
+    <label class="root-toggle"><input type="checkbox" data-require-root checked /> Include the final clause (y₄)</label>
+    <div class="status" aria-live="polite" aria-atomic="true">
+      <p data-result></p>
+      <p class="small" data-explanation></p>
+    </div>
+    <details open>
+      <summary>Watch the clauses</summary>
+      <div class="live-clauses">
+        {flatClauses.map(({ clause }, index) => (
+          <div class="live-clause" data-clause={index}>
+            <span class="equation" set:html={math(clauseTex(clause))} />
+            <span class="clause-status"></span>
+          </div>
+        ))}
+        <div class="live-clause" data-clause={12}>
+          <span class="equation" set:html={math(clauseTex(rootClause))} />
+          <span class="clause-status"></span>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <details class="equivalence-note">
+    <summary>Wait — is this really “equivalent”?</summary>
+    <p>The original formula has four variables; the encoding has eight. They aren’t interchangeable for arbitrary choices of those eight values.</p>
+    <p>The precise relationship is:</p>
+    <div class="equation" set:html={math('\\phi(x) \\;\\leftrightarrow\\; \\exists y_1,y_2,y_3,y_4:\\; C(x,y)')} />
+    <p>Here C is the full CNF, including (y₄). For any inputs that satisfy the original, the gate definitions give a unique choice of auxiliary values satisfying C. Conversely, any assignment satisfying C gives inputs satisfying the original. This is why the transformation preserves satisfiability.</p>
+  </details>
+</div>
+
+<style>
+  .tseitin {
+    --y1: #1769aa; --y2: #7b42ae; --y3: #a44814; --y4: #16735b;
+    --line: color-mix(in srgb, var(--ink) 18%, var(--bg));
+    --panel: color-mix(in srgb, var(--ink) 3%, var(--bg));
+    margin-block: 2rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .tseitin { --y1: #83bcff; --y2: #cea2ff; --y3: #ffb47e; --y4: #7bdbb5; }
+  }
+  .tseitin :global(.tseitin-y1) { color: var(--y1); }
+  .tseitin :global(.tseitin-y2) { color: var(--y2); }
+  .tseitin :global(.tseitin-y3) { color: var(--y3); }
+  .tseitin :global(.tseitin-y4) { color: var(--y4); }
+  .tseitin [hidden] { display: none !important; }
+  .equation { overflow-x: auto; padding-block: 0.45rem; }
+  .original { text-align: center; margin: 1.6rem 0; font-size: clamp(0.9rem, 3vw, 1.22rem); }
+  .definitions { margin-block: 1.8rem; }
+  .definition { padding: 0.55rem 0.85rem; border-left: 3px solid var(--line); }
+  .definition[data-active='true'] { background: var(--panel); border-color: var(--accent); }
+  .gate-label, .eyebrow { display: block; font: 600 0.72rem/1.5 system-ui, sans-serif; letter-spacing: 0.08em; }
+  .tseitin .eyebrow { margin-bottom: 0.8rem; text-transform: uppercase; }
+  .stepper, .quiz, .playground { border: 1px solid var(--line); border-radius: 10px; padding: 1.2rem; margin-block: 1.7rem; }
+  .stepper { background: var(--panel); }
+  .step-buttons, .toggle-row, .playground-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  button { font: inherit; font-size: 0.86rem; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 0.5rem 0.7rem; cursor: pointer; min-height: 44px; }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .step-buttons button[aria-pressed='true'], .answers button[aria-pressed='true'] { background: color-mix(in srgb, var(--accent) 12%, var(--bg)); border-color: var(--accent); }
+  .stage-equation { font-size: 1.14rem; margin-top: 1rem; }
+  .tseitin .small { font-size: 0.88rem; line-height: 1.6; margin-block: 0.8rem 0; }
+  details { border-top: 1px solid var(--line); padding: 0.9rem 0; margin-block: 0.65rem; font-size: 1rem; }
+  summary { cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--ink-strong); padding-block: 0.25rem; }
+  details[open] > summary { margin-bottom: 0.9rem; }
+  .tseitin details p { margin-bottom: 0.8rem; }
+  .answers { display: grid; gap: 0.55rem; }
+  .answers button { text-align: left; padding-inline: 1rem; font-size: 1rem; }
+  .feedback:empty { display: none; }
+  .clause-group { margin-block: 1rem; }
+  .root-equation { border-top: 1px solid var(--line); padding-top: 0.8rem; }
+  fieldset { border: 0; padding: 0; margin: 0 0 1.1rem; min-width: 0; }
+  legend { font-size: 0.85rem; margin-bottom: 0.55rem; }
+  .toggle-row button { flex: 1 0 20%; font-size: 0.95rem; white-space: nowrap; }
+  .toggle-row button[aria-pressed='true'] { border-color: var(--ink); background: var(--panel); }
+  .root-toggle { display: flex; gap: 0.65rem; align-items: center; font-size: 0.95rem; margin-block: 1.2rem; cursor: pointer; }
+  .root-toggle input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); flex-shrink: 0; }
+  .status { background: var(--panel); padding: 1rem; border-radius: 6px; }
+  .tseitin .status p { margin: 0; }
+  .tseitin .status .small { margin-top: 0.5rem; }
+  .live-clause { display: flex; gap: 0.5rem; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); font-size: 0.95rem; padding: 0.15rem 0; }
+  .clause-status { flex-shrink: 0; font: 600 0.72rem/1.5 system-ui, sans-serif; }
+  .live-clause[data-passes='false'] { background: color-mix(in srgb, var(--y3) 12%, var(--bg)); }
+  .live-clause[data-passes='false'] .clause-status { color: var(--y3); }
+  .equivalence-note { margin-top: 2rem; }
+  @media (max-width: 480px) {
+    .stepper, .quiz, .playground { padding: 0.85rem; }
+    .equation { font-size: 0.92em; }
+    .toggle-row { gap: 0.35rem; }
+    .toggle-row button { padding-inline: 0.4rem; }
+    .live-clause { font-size: 0.83rem; }
+  }
+</style>
+
+<script>
+  import { allClauses, deriveAuxiliaries, evaluateOriginal, clauseHolds } from '../lib/tseitin';
+
+  document.querySelectorAll<HTMLElement>('[data-tseitin]').forEach(root => {
+    root.querySelectorAll<HTMLElement>('[data-interactive]').forEach(element => element.hidden = false);
+    const stepButtons = root.querySelectorAll<HTMLButtonElement>('[data-step]');
+    function setStep(step: number) {
+      stepButtons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.step) === step)));
+      root.querySelectorAll<HTMLElement>('[data-stage]').forEach(panel => panel.hidden = Number(panel.dataset.stage) !== step);
+      root.querySelectorAll<HTMLElement>('[data-definition]').forEach(row => row.dataset.active = String(Number(row.dataset.definition) === step + 1));
+    }
+    stepButtons.forEach(button => button.addEventListener('click', () => setStep(Number(button.dataset.step))));
+    setStep(0);
+
+    const feedback = root.querySelector<HTMLElement>('[data-feedback]')!;
+    root.querySelectorAll<HTMLButtonElement>('[data-answer]').forEach(button => {
+      button.addEventListener('click', () => {
+        root.querySelectorAll<HTMLButtonElement>('[data-answer]').forEach(answer => answer.setAttribute('aria-pressed', String(answer === button)));
+        feedback.textContent = button.dataset.answer === 'correct'
+          ? 'Yes. (¬y₃ ∨ ¬x₄) is false when both variables are true, so it forbids exactly that case.'
+          : button.dataset.answer === 'same'
+          ? 'Try y₃ = 1 and x₄ = 1. This clause is still true, so it allows the case we need to forbid. Try again.'
+          : 'Try y₃ = 1 and x₄ = 1. This clause passes too. We need a clause whose two literals are both false in that case. Try again.';
+      });
+    });
+
+    let assignment: boolean[] = [];
+    const requireRoot = root.querySelector<HTMLInputElement>('[data-require-root]')!;
+    const variableButtons = root.querySelectorAll<HTMLButtonElement>('[data-variable]');
+    const result = root.querySelector<HTMLElement>('[data-result]')!;
+    const explanation = root.querySelector<HTMLElement>('[data-explanation]')!;
+    function render() {
+      variableButtons.forEach(button => {
+        const value = assignment[Number(button.dataset.variable)];
+        button.setAttribute('aria-pressed', String(value));
+        button.querySelector<HTMLElement>('[data-bit]')!.textContent = value ? '1' : '0';
+      });
+      const passes = allClauses.map(clause => clauseHolds(clause, assignment));
+      const definitionsHold = passes.slice(0, -1).every(Boolean);
+      const cnfHolds = definitionsHold && (!requireRoot.checked || passes[12]);
+      const original = evaluateOriginal(assignment.slice(0, 4));
+      result.textContent = `Original: ${original ? 'true' : 'false'} · CNF: ${cnfHolds ? 'true' : 'false'}`;
+      explanation.textContent = !definitionsHold
+        ? 'An auxiliary value breaks its definition. The failed clauses show where. Recompute the auxiliaries to make the names honest again.'
+        : !requireRoot.checked
+        ? 'All definitions hold. With (y₄) omitted, this CNF accepts even inputs where the original is false. Try the reset example.'
+        : original
+        ? 'Every definition holds and y₄ is true. This assignment satisfies both the original and the CNF.'
+        : 'Every definition holds, but y₄ is false. The final clause rejects this assignment, just as the original formula does.';
+      root.querySelectorAll<HTMLElement>('[data-clause]').forEach(row => {
+        const index = Number(row.dataset.clause);
+        const omitted = index === 12 && !requireRoot.checked;
+        row.dataset.passes = omitted ? 'omitted' : String(passes[index]);
+        row.querySelector<HTMLElement>('.clause-status')!.textContent = omitted ? 'omitted' : passes[index] ? '✓ pass' : '× fail';
+      });
+    }
+    function repair() {
+      assignment = [...assignment.slice(0, 4), ...deriveAuxiliaries(assignment.slice(0, 4))];
+      render();
+    }
+    function reset() {
+      const inputs = [true, false, true, true];
+      assignment = [...inputs, ...deriveAuxiliaries(inputs)];
+      requireRoot.checked = true;
+      render();
+    }
+    variableButtons.forEach(button => button.addEventListener('click', () => {
+      const index = Number(button.dataset.variable);
+      assignment[index] = !assignment[index];
+      if (index < 4) repair();
+      else render();
+    }));
+    root.querySelector('[data-repair]')!.addEventListener('click', repair);
+    root.querySelector('[data-reset]')!.addEventListener('click', reset);
+    requireRoot.addEventListener('change', render);
+    reset();
+  });
+</script>

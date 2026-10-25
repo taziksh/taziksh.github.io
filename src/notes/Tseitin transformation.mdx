@@ -1,0 +1,31 @@
+---
+title: Tseitin transformation, one small step at a time
+date: 2026-10-25
+public: true
+---
+import TseitinPerspectives from '../components/TseitinPerspectives.astro';
+import TseitinWalkthrough from '../components/TseitinWalkthrough.astro';
+
+I was reading [Borealis’s introduction to SAT solvers](https://rbcborealis.com/research-blogs/tutorial-9-sat-solvers-i-introduction-and-applications/), and got stuck at the Tseitin transformation. The recipe looks straightforward. The wall of symbols at the end does not.
+
+So let’s take their example apart, give each piece a name, and put it back together. Then we can try breaking it.
+
+<TseitinPerspectives />
+
+## Working through the full example
+
+Now let’s connect those intuitions to all the clauses.
+
+<TseitinWalkthrough />
+
+## Why bother?
+
+Distributing OR over AND can make a formula balloon. For example, an OR of $n$ separate two-variable ANDs produces $2^n$ clauses under direct distribution. With Tseitin, each gate gets a fresh variable and a fixed number of short clauses. For a formula built from these unary and binary gates, the encoding grows linearly with the number of gates.
+
+We’ve traded a few more variables for a manageable number of clauses. That’s the trick I want to remember: **name the pieces, constrain the names, require the output.**
+
+## More things to play with
+
+The worked formula and operator recipes come from [S. Prince’s SAT tutorial at RBC Borealis](https://rbcborealis.com/research-blogs/tutorial-9-sat-solvers-i-introduction-and-applications/), equations 3–7. The derivations and experiments here are my way of working through them.
+
+For more interactive explanations, try [Terence Tao’s QED](https://teorth.github.io/QED/), which turns propositional proofs into exercises; [Olah and Carter’s attention explainer](https://distill.pub/2016/augmented-rnns/), which connects diagrams to the mathematics; and [Explorable Explanations](https://explorabl.es/), a collection of things to learn by playing.
