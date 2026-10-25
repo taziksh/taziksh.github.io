@@ -6,7 +6,7 @@ public: true
 import Equation from '../components/TseitinEquation.astro';
 
 <Equation tex={String.raw`
-\phi := ((x_1 \lor x_2) \Leftrightarrow x_3) \Rightarrow (\lnot x_4).
+\phi := \htmlClass{tseitin-expression-4}{\htmlClass{tseitin-expression-2}{(\htmlClass{tseitin-expression-1}{(x_1 \lor x_2)} \Leftrightarrow x_3)} \Rightarrow \htmlClass{tseitin-expression-3}{(\lnot x_4)}}.
 `} />
 
 **Step 1.** Associate new variables with the subexpressions.

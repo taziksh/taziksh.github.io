@@ -24,10 +24,11 @@ const html = katex.renderToString(markedTex, {
   .tseitin-equation :global(.tseitin-term > *) { pointer-events: none; }
   .tseitin-equation :global(.tseitin-term::after) { content: ''; position: absolute; inset: -0.15em -0.18em; }
   .tseitin-equation :global(.tseitin-term:hover) { color: var(--accent); }
-  :global(article:has(.tseitin-y1:hover) .tseitin-definition-1),
-  :global(article:has(.tseitin-y2:hover) .tseitin-definition-2),
-  :global(article:has(.tseitin-y3:hover) .tseitin-definition-3),
-  :global(article:has(.tseitin-y4:hover) .tseitin-definition-4) {
+  :global(article:has(.tseitin-y1:hover) .tseitin-expression-1),
+  :global(article:has(.tseitin-y2:hover) .tseitin-expression-2),
+  :global(article:has(.tseitin-y3:hover) .tseitin-expression-3),
+  :global(article:has(.tseitin-y4:hover) .tseitin-expression-4) {
+    border-radius: 3px;
     background: color-mix(in srgb, var(--accent) 12%, var(--bg));
   }
 </style>
