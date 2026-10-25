@@ -17,7 +17,8 @@ const html = katex.renderToString(markedTex, {
   .tseitin-equation { margin-block: 1.2rem; border-radius: 3px; }
   .tseitin-equation :global(.katex) { font-size: 18px; }
   .tseitin-equation[class*='tseitin-definition-'] { margin: 0; }
-  :global(.tseitin-definitions) { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem 1rem; margin: 1.2rem 0; }
+  :global(.tseitin-definitions) { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.15rem 0.3rem; margin: 0.6rem 0; }
+  :global(article p:has(+ .tseitin-definitions)) { margin-bottom: 0.6rem; }
   .tseitin-equation :global(.katex-display) { margin: 0; padding: 0.25rem; overflow-x: auto; overflow-y: hidden; }
   .tseitin-equation :global(.katex-display > .katex) { width: max-content; min-width: 100%; }
   .tseitin-equation :global(.tseitin-term) { display: inline-block; position: relative; cursor: default; }
