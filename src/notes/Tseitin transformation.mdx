@@ -22,8 +22,7 @@ import Equation from '../components/TseitinEquation.astro';
 
 <Equation tex={String.raw`
 \begin{aligned}
-C := {} & y_4 \\
-&\land (y_4 \Leftrightarrow (y_2 \Rightarrow y_3)) \\
+C := {} & y_4 \land (y_4 \Leftrightarrow (y_2 \Rightarrow y_3)) \\
 &\land (y_3 \Leftrightarrow \lnot x_4) \\
 &\land (y_2 \Leftrightarrow (y_1 \Leftrightarrow x_3)) \\
 &\land (y_1 \Leftrightarrow (x_1 \lor x_2)).
@@ -32,78 +31,24 @@ C := {} & y_4 \\
 
 **Step 3.** Convert each definition to CNF.
 
-<div className="tseitin-rule">
-<Equation tex={String.raw`a \Leftrightarrow \lnot b`} />
 <Equation tex={String.raw`
 \begin{aligned}
-&\equiv (a \lor b) \\
-&\land (\lnot a \lor \lnot b)
+a \Leftrightarrow \lnot b &\equiv (a \lor b) \land (\lnot a \lor \lnot b) \\
+a \Leftrightarrow (b \lor c) &\equiv (a \lor \lnot b) \land (a \lor \lnot c) \land (\lnot a \lor b \lor c) \\
+a \Leftrightarrow (b \land c) &\equiv (\lnot a \lor b) \land (\lnot a \lor c) \land (a \lor \lnot b \lor \lnot c) \\
+a \Leftrightarrow (b \Rightarrow c) &\equiv (a \lor b) \land (a \lor \lnot c) \land (\lnot a \lor \lnot b \lor c) \\
+a \Leftrightarrow (b \Leftrightarrow c) &\equiv (\lnot a \lor \lnot b \lor c) \land (\lnot a \lor b \lor \lnot c) \land (a \lor \lnot b \lor \lnot c) \land (a \lor b \lor c)
 \end{aligned}
 `} />
-</div>
-
-<div className="tseitin-rule">
-<Equation tex={String.raw`a \Leftrightarrow (b \lor c)`} />
-<Equation tex={String.raw`
-\begin{aligned}
-&\equiv (a \lor \lnot b) \\
-&\land (a \lor \lnot c) \\
-&\land (\lnot a \lor b \lor c)
-\end{aligned}
-`} />
-</div>
-
-<div className="tseitin-rule">
-<Equation tex={String.raw`a \Leftrightarrow (b \land c)`} />
-<Equation tex={String.raw`
-\begin{aligned}
-&\equiv (\lnot a \lor b) \\
-&\land (\lnot a \lor c) \\
-&\land (a \lor \lnot b \lor \lnot c)
-\end{aligned}
-`} />
-</div>
-
-<div className="tseitin-rule">
-<Equation tex={String.raw`a \Leftrightarrow (b \Rightarrow c)`} />
-<Equation tex={String.raw`
-\begin{aligned}
-&\equiv (a \lor b) \\
-&\land (a \lor \lnot c) \\
-&\land (\lnot a \lor \lnot b \lor c)
-\end{aligned}
-`} />
-</div>
-
-<div className="tseitin-rule">
-<Equation tex={String.raw`a \Leftrightarrow (b \Leftrightarrow c)`} />
-<Equation tex={String.raw`
-\begin{aligned}
-&\equiv (\lnot a \lor \lnot b \lor c) \\
-&\land (\lnot a \lor b \lor \lnot c) \\
-&\land (a \lor \lnot b \lor \lnot c) \\
-&\land (a \lor b \lor c)
-\end{aligned}
-`} />
-</div>
 
 **CNF:**
 
 <Equation tex={String.raw`
 \begin{aligned}
-C := {} & y_4 \\
-&\land (y_4 \lor y_2) \\
-&\land (y_4 \lor \lnot y_3) \\
-&\land (\lnot y_4 \lor \lnot y_2 \lor y_3) \\[0.5em]
-&\land (y_3 \lor x_4) \\
-&\land (\lnot y_3 \lor \lnot x_4) \\[0.5em]
-&\land (\lnot y_2 \lor \lnot y_1 \lor x_3) \\
-&\land (\lnot y_2 \lor y_1 \lor \lnot x_3) \\
-&\land (y_2 \lor \lnot y_1 \lor \lnot x_3) \\
-&\land (y_2 \lor y_1 \lor x_3) \\[0.5em]
-&\land (y_1 \lor \lnot x_1) \\
-&\land (y_1 \lor \lnot x_2) \\
-&\land (\lnot y_1 \lor x_1 \lor x_2).
+C := {} & y_4 \land (y_4 \lor y_2) \land (y_4 \lor \lnot y_3) \land (\lnot y_4 \lor \lnot y_2 \lor y_3) \\
+&\land (y_3 \lor x_4) \land (\lnot y_3 \lor \lnot x_4) \\
+&\land (\lnot y_2 \lor \lnot y_1 \lor x_3) \land (\lnot y_2 \lor y_1 \lor \lnot x_3) \land (y_2 \lor \lnot y_1 \lor \lnot x_3) \land (y_2 \lor y_1 \lor x_3) \\
+&\land (y_1 \lor \lnot x_1) \land (y_1 \lor \lnot x_2) \land (\lnot y_1 \lor x_1 \lor x_2).
 \end{aligned}
 `} />
 
