@@ -5,6 +5,8 @@ public: true
 ---
 import Equation from '../components/TseitinEquation.astro';
 
+The Tseitin transformation lets us convert any Boolean formula to conjunctive normal form (CNF) by introducing new variables. Let's say we have the following expression:
+
 <Equation tex={String.raw`
 \phi := \htmlClass{tseitin-expression-4}{\htmlClass{tseitin-expression-2}{(\htmlClass{tseitin-expression-1}{(x_1 \lor x_2)} \Leftrightarrow x_3)} \Rightarrow \htmlClass{tseitin-expression-3}{(\lnot x_4)}}.
 `} />
@@ -29,4 +31,6 @@ C := {} & y_4 \land (y_4 \Leftrightarrow (y_2 \Rightarrow y_3)) \\
 \end{aligned}
 `} />
 
-[Source](https://rbcborealis.com/research-blogs/tutorial-9-sat-solvers-i-introduction-and-applications/)
+The rest is fairly straightforward: we rewrite each equivalence as CNF using its truth table.
+
+If you’re interested, check out [the RBC Borealis tutorial](https://rbcborealis.com/research-blogs/tutorial-9-sat-solvers-i-introduction-and-applications/)
