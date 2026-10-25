@@ -3,33 +3,41 @@ title: Tseitin transformation
 date: 2026-10-24
 public: true
 ---
-import Equation from '../components/TseitinEquation.astro';
 
 The Tseitin transformation lets us convert any Boolean formula to conjunctive normal form (CNF) by introducing new variables. Let's say we have the following expression:
 
-<Equation tex={String.raw`
-\phi := \htmlClass{tseitin-expression-4}{\htmlClass{tseitin-expression-2}{(\htmlClass{tseitin-expression-1}{(x_1 \lor x_2)} \Leftrightarrow x_3)} \Rightarrow \htmlClass{tseitin-expression-3}{(\lnot x_4)}}.
-`} />
+$$
+\phi := ((x_1 \lor x_2) \Leftrightarrow x_3) \Rightarrow (\lnot x_4).
+$$
 
 **Step 1.** Associate new variables with the subexpressions.
 
-<div className="tseitin-definitions">
-<Equation definition={1} tex={String.raw`y_1 \Leftrightarrow (x_1 \lor x_2)`} />
-<Equation definition={2} tex={String.raw`y_2 \Leftrightarrow (y_1 \Leftrightarrow x_3)`} />
-<Equation definition={3} tex={String.raw`y_3 \Leftrightarrow \lnot x_4`} />
-<Equation definition={4} tex={String.raw`y_4 \Leftrightarrow (y_2 \Rightarrow y_3).`} />
-</div>
+$$
+y_1 \Leftrightarrow (x_1 \lor x_2)
+$$
+
+$$
+y_2 \Leftrightarrow (y_1 \Leftrightarrow x_3)
+$$
+
+$$
+y_3 \Leftrightarrow \lnot x_4
+$$
+
+$$
+y_4 \Leftrightarrow (y_2 \Rightarrow y_3).
+$$
 
 **Step 2.** Restate the formula using these definitions.
 
-<Equation tex={String.raw`
+$$
 \begin{aligned}
 C := {} & y_4 \land (y_4 \Leftrightarrow (y_2 \Rightarrow y_3)) \\
 &\land (y_3 \Leftrightarrow \lnot x_4) \\
 &\land (y_2 \Leftrightarrow (y_1 \Leftrightarrow x_3)) \\
 &\land (y_1 \Leftrightarrow (x_1 \lor x_2)).
 \end{aligned}
-`} />
+$$
 
 The rest is fairly straightforward: we rewrite each equivalence as CNF using its truth table.
 

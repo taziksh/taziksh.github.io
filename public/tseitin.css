@@ -1,0 +1,18 @@
+
+  .tseitin-equation { margin-block: 1.2rem; border-radius: 3px; }
+  .tseitin-equation .katex { font-size: 18px; }
+  .tseitin-equation[class*='tseitin-definition-'] { margin: 0; }
+  .tseitin-definitions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.15rem 0.3rem; margin: 0.6rem 0; }
+  article p:has(+ .tseitin-definitions) { margin-bottom: 0.6rem; }
+  .tseitin-equation .katex-display { margin: 0; padding: 0.25rem; overflow-x: auto; overflow-y: hidden; }
+  .tseitin-equation .katex-display > .katex { width: max-content; min-width: 100%; }
+  .tseitin-equation .tseitin-term { display: inline-block; position: relative; cursor: default; }
+  .tseitin-equation .tseitin-term > * { pointer-events: none; }
+  .tseitin-equation .tseitin-term::after { content: ''; position: absolute; inset: -0.15em -0.18em; }
+  .tseitin-equation .tseitin-term:hover { color: var(--accent); }
+  article:has(.tseitin-y1:hover) .tseitin-expression-1,
+  article:has(.tseitin-y2:hover) .tseitin-expression-2,
+  article:has(.tseitin-y3:hover) .tseitin-expression-3,
+  article:has(.tseitin-y4:hover) .tseitin-expression-4 {
+    box-shadow: 0 2px 0 var(--accent);
+  }

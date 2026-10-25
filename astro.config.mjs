@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import remarkTseitin from './src/remark-tseitin.mjs';
 import remarkBreaks from 'remark-breaks';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -18,7 +19,7 @@ export default defineConfig({
   },
   integrations: [mdx()],
   markdown: {
-    remarkPlugins: [remarkObsidianImages, remarkBreaks, remarkMath],
+    remarkPlugins: [remarkObsidianImages, remarkBreaks, remarkMath, remarkTseitin],
     rehypePlugins: [rehypeLinkFavicons, rehypeKatex],
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
