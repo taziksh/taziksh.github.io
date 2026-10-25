@@ -9,10 +9,16 @@ import Equation from '../components/TseitinEquation.astro';
 \phi := ((x_1 \lor x_2) \Leftrightarrow x_3) \Rightarrow (\lnot x_4).
 `} />
 
+**Step 1.** Associate new variables with the subexpressions.
+
+<div className="tseitin-definitions">
 <Equation definition={1} tex={String.raw`y_1 \Leftrightarrow (x_1 \lor x_2)`} />
 <Equation definition={2} tex={String.raw`y_2 \Leftrightarrow (y_1 \Leftrightarrow x_3)`} />
 <Equation definition={3} tex={String.raw`y_3 \Leftrightarrow \lnot x_4`} />
 <Equation definition={4} tex={String.raw`y_4 \Leftrightarrow (y_2 \Rightarrow y_3).`} />
+</div>
+
+**Step 2.** Restate the formula using these definitions.
 
 <Equation tex={String.raw`
 \begin{aligned}
@@ -24,27 +30,25 @@ C := {} & y_4 \\
 \end{aligned}
 `} />
 
+**Step 3.** Convert each definition to CNF.
+
 <Equation tex={String.raw`
 \begin{aligned}
 a \Leftrightarrow \lnot b
 &\equiv (a \lor b) \land (\lnot a \lor \lnot b) \\[0.8em]
 a \Leftrightarrow (b \lor c)
-&\equiv (a \lor \lnot b) \land (a \lor \lnot c) \\
-&\quad \land (\lnot a \lor b \lor c) \\[0.8em]
+&\equiv (a \lor \lnot b) \land (a \lor \lnot c) \land (\lnot a \lor b \lor c) \\[0.8em]
 a \Leftrightarrow (b \land c)
-&\equiv (\lnot a \lor b) \land (\lnot a \lor c) \\
-&\quad \land (a \lor \lnot b \lor \lnot c) \\[0.8em]
+&\equiv (\lnot a \lor b) \land (\lnot a \lor c) \land (a \lor \lnot b \lor \lnot c) \\[0.8em]
 a \Leftrightarrow (b \Rightarrow c)
-&\equiv (a \lor b) \land (a \lor \lnot c) \\
-&\quad \land (\lnot a \lor \lnot b \lor c) \\[0.8em]
+&\equiv (a \lor b) \land (a \lor \lnot c) \land (\lnot a \lor \lnot b \lor c) \\[0.8em]
 a \Leftrightarrow (b \Leftrightarrow c)
-&\equiv (\lnot a \lor \lnot b \lor c) \\
-&\quad \land (\lnot a \lor b \lor \lnot c) \\
-&\quad \land (a \lor \lnot b \lor \lnot c) \\
-&\quad \land (a \lor b \lor c).
+&\equiv (\lnot a \lor \lnot b \lor c) \land (\lnot a \lor b \lor \lnot c) \\
+&\quad \land (a \lor \lnot b \lor \lnot c) \land (a \lor b \lor c).
 \end{aligned}
 `} />
 
+**CNF:**
 <Equation tex={String.raw`
 \begin{aligned}
 C := {} & y_4 \\

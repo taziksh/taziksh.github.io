@@ -14,9 +14,13 @@ const html = katex.renderToString(markedTex, {
 
 <style>
   .tseitin-equation { margin-block: 1.4rem; border-radius: 3px; }
-  .tseitin-equation[class*='tseitin-definition-'] { width: fit-content; max-width: 100%; margin: 0.2rem auto; }
+  .tseitin-equation[class*='tseitin-definition-'] { width: fit-content; max-width: 100%; margin: 0.2rem 0; }
+  :global(.tseitin-definitions) { width: fit-content; max-width: 100%; margin: 1.4rem auto; }
   .tseitin-equation :global(.katex-display) { margin: 0; padding: 0.25rem; overflow-x: auto; overflow-y: hidden; }
-  .tseitin-equation :global(.tseitin-term) { cursor: default; }
+  .tseitin-equation :global(.katex-display > .katex) { width: max-content; min-width: 100%; }
+  .tseitin-equation :global(.tseitin-term) { display: inline-block; position: relative; cursor: default; }
+  .tseitin-equation :global(.tseitin-term > *) { pointer-events: none; }
+  .tseitin-equation :global(.tseitin-term::after) { content: ''; position: absolute; inset: -0.15em -0.18em; }
   .tseitin-equation :global(.tseitin-term:hover) { color: var(--accent); }
   :global(article:has(.tseitin-y1:hover) .tseitin-definition-1),
   :global(article:has(.tseitin-y2:hover) .tseitin-definition-2),
