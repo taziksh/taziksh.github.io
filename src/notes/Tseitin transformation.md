@@ -4,7 +4,7 @@ date: 2026-10-24
 public: true
 ---
 
-The Tseitin transformation lets us convert any Boolean formula to conjunctive normal form (CNF) by introducing new variables. Let's say we have the following expression:
+The Tseitin transformation lets us convert any Boolean formula to [conjunctive normal form (CNF)](https://en.wikipedia.org/wiki/Conjunctive_normal_form) by introducing new variables. Let's say we have the following expression:
 
 $$
 \phi := ((x_1 \lor x_2) \Leftrightarrow x_3) \Rightarrow (\lnot x_4).
